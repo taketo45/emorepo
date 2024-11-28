@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ムビリポ</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link href="https://fonts.googleapis.com/earlyaccess/nicomoji.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles_emometer.css">
+</head>
+<body>
+  <div class="container">
+    <h1>ムービーリポート  テナント選択/ユーザー登録画面</h1>
+    <div class="control-panel">
+        <section name="tenant" id="tenantselect">
+          <option value="">選択してください</option>
+        </section>
+    </div>
+
+    </div>
+    <div class="container">
+        <h2>登録結果</h2>
+        <div id="result" class="result-section"></div>
+    </div>
+    <script type="module" src="">
+
+      import {db, auth, provider , logOut} from "./js/FirebaseInit.js";
+
+      (() => {
+
+        onAuthStateChanged(auth, user => {
+          if (user) {
+              me = user;
+          }
+          console.log(`${me.displayName} Login!!`);
+          const td = new Date();
+          const today = dateConvertHyphen(td);
+          setDefalutDate(today);
+
+          // inputElement.$activity.on("change", function(e){
+          //     const dbname = "campany/activity";
+          //     getRealtimeDBSelectData(user, dbname, inputElement.$training);
+          // });
+
+          //送信
+          $submit.on("click", function (event) {
+              const curentDatetime = getCurentDatetime(td);
+              const dbElement = getDBinputObj(curentDatetime);
+              // console.log(dbname);
+              const date = inputElement.$date.val();
+              const dbname = setDBpath(user, date);
+              setRealtimeDB(getDbRefarence(db, dbname), dbElement);   
+              clearJqueryElement(inputElement);
+              setDefalutDate(today);
+          });
+
+
+          $logout.on("click", function(){
+              logOut(auth);
+          });
+        });
+      })();
+
+
+    </script>
+  
+</body>
+</html>

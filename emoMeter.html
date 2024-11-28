@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Detection App</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link href="https://fonts.googleapis.com/earlyaccess/nicomoji.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- グラフ表示のためにchart.jsを読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <h1 class="header-logo"><img src="img/MentalAnalyzer.png" alt="タイトルロゴ"></h1>
+        </div>
+        <div class="header-center">
+            <h2>えもメーター</h2>
+        </div>
+        <div class="header-right">
+            <!-- ログイン状態表示エリア -->
+            <div id="authContainer" class="auth-container">
+                <div id="userInfo" style="display: none;">
+                    <span id="userName"></span>
+                    <button id="logoutButton" class="btn">ログアウト</button>
+                </div>
+                <button id="loginButton" class="btn">Googleでログイン</button>
+        </div>
+    </header>
+    </div>
+
+    <!-- メインコンテンツ（ログイン後に表示） -->
+    <div id="results" style="display: none;">
+        <div class="button-container">
+            <div class="main-actions">
+                <button id="captureButton">写真を撮影</button>
+                <button id="analyzeButton" disabled>分析を開始</button>
+            </div>
+            <div class="sub-actions">
+                <button id="updateButton">撮影し直し</button>
+                <a id="download" download="capture.png">DL</a>
+            </div>
+        </div>
+
+        <div class="preview-container">
+            <video id="video" autoplay playsinline></video>
+            <img id="imagePreview" style="display: none;">
+        </div>
+
+        <div id="resultsContainer" class="result-container"></div>
+        
+        <!-- チャート表示エリアを追加 -->
+        <div class="chart-container">
+            <canvas id="emotionChart"></canvas>
+        </div>
+        
+        <div id="historyContainer" class="history-container"></div>
+        <div id="canvasDisplay"></div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Firebase -->
+    <script type="module" src="js/MyAuthkeys.js"></script>
+    <script type="module" src="js/firebase.js"></script>
+    
+    <!-- アプリ -->
+    <script type="module" src="js/camera.js"></script>
+    <script type="module" src="js/imageAnalysis.js"></script>
+    <script type="module" src="js/displayUtils.js"></script>
+    <script type="module" src="js/DisplayClass.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

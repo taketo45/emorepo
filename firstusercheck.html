@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ムビレポ</title>
+  <!-- <link rel="stylesheet" href="css/reset.css"> -->
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <header>
+    <div class="header-left">
+        <h1 class="header-logo"><img src="assets/img/logo_tralog.png" alt="タイトルロゴ"></h1>
+    </div>
+
+    <div class="header-right">
+        <ul class="header-list">
+            <li class="header-item"><a href="displaytraing.html">ムービレポート</a></li>
+
+            <li class="header-item"></li>
+            <li class="header-item">
+                <button class="btn" id="logout-btn">Logout</button></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <h1 class="main-title">トレーニング入力</h1>
+    <p class="sub-title">日付を選択しトレーニングの記録をしてください。</p>
+    <form id="training-form" method="POST">
+        <div>
+            <label class="inputtext" for="date">日付</label>
+            <input class="input" id="date" name="date" type="date"
+                placeholder="日付" required>
+        </div>
+        <div>
+            <label class="inputtext" for="activity">アクティビティ</label>
+            <select class="input" name="activity" id="activity" type="text" placeholder="上半身筋トレ" required>
+                <option value="" selected>トレーニング種別選択</option>
+                <option value="筋トレ/上半身">筋トレ/上半身</option>
+                <option value="筋トレ/下半身">筋トレ/下半身</option>
+                <option value="有酸素運動">有酸素運動</option>
+            </select>
+            <label class="unittext" for="activity"></label>
+        </div>
+        <div>
+            <label class="inputtext" for="training">種目</label>
+            <!-- <input class="input" id="training" name="traingin" type="text"
+                    placeholder="トレーニング" required> -->
+            <select class="input" name="training" id="training" type="text" placeholder="上半身筋トレ" required>
+                <option value="" selected>トレーニング内容選択</option>
+                <option value="ラットプルダウン">ラットプルダウン</option>
+                <option value="アームカール">アームカール</option>
+                <option value="ダンベルプレス">ダンベルプレス</option>
+                <option value="チェストプレス">チェストプレス</option>
+                <option value="ランニング">ランニング</option>
+            </select>
+            <label class="unittext" for="training"></label>
+        </div>
+        <div>
+            <label class="inputtext" for="item4">負荷</label>
+            <input class="input" id="item4" name="item4" type="text"
+                        placeholder="負荷" inputmode="numeric" required>
+            <label class="unittext" for="item4">Kg</label>
+        </div>
+        <div>
+            <label class="inputtext" for="count">回数</label>
+            <input class="input" id="item5" name="item5" type="text"
+                placeholder="回数" inputmode="numeric" required>
+            <label class="unittext" for="item5">回</label>
+        </div>
+        <div>
+            <label class="inputtext" for="setcount">セット数</label>
+            <input class="input" id="item6" name="setcount" type="text"
+                placeholder="セット数" value="1">
+            <label class="unittext" for="item6">回</label>
+        </div>
+        <input class="btn" id="submit-btn" type="button" value="登録">
+    </form>
+
+</main>
+<footer>
+    <button class="btn" id="custom-btn">種目のカスタマイズ</button>
+    <div class="footer">
+        <small>トレログ</small>
+    </div>
+    
+    
+</footer>
+
+
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script type="module" src="js/firebase.js"></script>
+  <script src="js/common.js"></script>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, push, set, get, remove, onChildAdded, onChildRemoved, onChildChanged, update } //updateを追加
+        from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getAuth, signInAnonymously, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
+        from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import {db, auth, provider , logOut, getDbRefarence, setRealtimeDB, modifySetObj, clearJqueryElement, setDBpath} from "./js/firebase.js";
+    import { firebaseConfig } from "./js/MyAuthkeys.js"; 
+
+    const inputElement = {
+        $date: $("#date"),
+        $activity: $("#activity"),
+        $training: $("#training"),
+
+        $item4: $("#item4"),
+        $item5: $("#item5"),
+        $item6: $("#item6"),
+    }
+    const $logout = $("#logout-btn");
+    const $submit = $("#submit-btn");
+    let me = null;
+
+(() => {
+
+    onAuthStateChanged(auth, user => {
+    if (user) {
+        me = user;
+    }
+    console.log(`${me.displayName} Login!!`);
+    const td = new Date();
+    const today = dateConvertHyphen(td);
+    setDefalutDate(today);
+
+    // inputElement.$activity.on("change", function(e){
+    //     const dbname = "campany/activity";
+    //     getRealtimeDBSelectData(user, dbname, inputElement.$training);
+    // });
+
+    //送信
+    $submit.on("click", function (event) {
+        const curentDatetime = getCurentDatetime(td);
+        const dbElement = getDBinputObj(curentDatetime);
+        // console.log(dbname);
+        const date = inputElement.$date.val();
+        const dbname = setDBpath(user, date);
+        setRealtimeDB(getDbRefarence(db, dbname), dbElement);   
+        clearJqueryElement(inputElement);
+        setDefalutDate(today);
+    });
+
+
+    $logout.on("click", function(){
+        logOut(auth);
+    });
+    });
+})();
+
+// データ取得と表示の関数
+async function getRealtimeDBSelectData(user, dbname, $output) {
+    try {
+        const dbRef = getDbRefarence(db, dbname);
+        // ref(db, tablename); 
+        // データを一度に取得
+        console.log(dbRef);
+        // const snapshot = await get(dbRef);
+        // // テーブルボディをクリア
+        // // console.log(snapshot);
+        // $output.empty();
+
+        // const trainingKeys = Object.keys(snapshot.val());
+        // console.log('Training keys:', trainingKeys);
+
+        get(dbRef).then((snapshot) => {
+        const data = snapshot.val();
+        
+        // データが存在するか確認
+        if (data) {
+            const trainingKeys = Object.keys(data);
+            console.log('Training keys:', trainingKeys);
+        } else {
+            console.log("データが存在しません");
+            return []; // 空の配列を返す
+        }
+    }).catch((error) => {
+        console.error("エラーが発生しました:", error);
+    });
+        // if (snapshot.exists()) {
+        //     const trainingData = snapshot.val();
+            
+        //     Object.keys(trainingData).forEach(key => {
+        //         const option = $('<option>');
+        //         option.value = key;
+        //         option.textContent = key;
+        //         selectElement.appendChild(option);
+        //     });
+        // } else {
+        //     throw new Error("トレーニングデータが存在しません");
+        // }
+
+        // 取得したデータを処理
+        snapshot.forEach((data) => {
+            const contents = data.val();
+            const key = data.key;
+            console.log("contents: " + contents);
+
+            const html = getSelectHtml(contents,key);
+            $output.append(html);
+        
+        });
+    } catch (error) {
+        console.error("データ取得エラー:", error);
+    }
+}
+
+function getSelectHtml(contents,key){
+    // $("div-activity").val(contents.activity);
+    let h = "";
+    if (contents.activity === "有酸素運動") {
+        h = `<tr id=${key}>`;
+        h += `<td class="td-traning">${contents.training}</td>`;
+        h += `<td class="td-item4 weight distance">${contents.distance} km</td>`;
+        h += `<td class="td-item5 count minutes">${contents.minutes} 分</td>`;
+        h += `<td class="td-item6 setcount"></td>`;
+        // h += `<td class="td-btn-update"><button class="update-btn" data-key="${key}" date=${contents.date.slice(0,10)}>更新</button></td>`;
+        h += `<td class="td-btn-remove"><button class="remove-btn" data-key="${key}" date=${contents.date.slice(0,10)}>削除</button></td>`;
+        h += `</tr>`;
+        // $("#output").append(h);
+    } else {
+        h = `<tr id=${key}>`;
+        h += `<td class="td-traning">${contents.training}</td>`;
+        h += `<td class="td-item4 weight distance">${contents.weight} kg</td>`;
+        h += `<td class="td-item5 count minutes">${contents.count} 回</td>`;
+        h += `<td class="td-item6 setcount">${contents.setcount} セット</td>`;
+        // h += `<td class="td-btn-update"><button class="update-btn" data-key="${key}" date=${contents.date.slice(0,10)}>更新</button></td>`;
+        h += `<td class="td-btn-remove"><button class="remove-btn" data-key="${key}" date=${contents.date.slice(0,10)}>削除</button></td>`;
+        h += `</tr>`;
+    }
+    return h;
+}
+
+function getCurentDatetime(date){
+    const ymd= date.toLocaleDateString('ja-JP');
+    const time = date.toLocaleTimeString('ja-JP', {hour12: false});  
+    return ymd + ' ' + time;
+}
+
+function getDBinputObj (curentDatetime) {
+    const dbElement = {
+            date: curentDatetime,
+            activity: inputElement.$activity.val(),
+            training: inputElement.$training.val(),
+            item4: inputElement.$item4.val(),
+            item5: inputElement.$item5.val(),
+            item6: inputElement.$item6.val(),
+        }
+        return dbElement;
+} 
+
+function setDefalutDate(day){
+    inputElement.$date.val(day);
+}
+
+function dateConvertHyphen (date) {
+    const returndate = date.toLocaleDateString("ja-JP")
+    .split("/")
+    .join("-");
+    return returndate;
+}
+
+
+
+    </script>
+    <!-- <script type="module" src="js/testFirebase.js"></script> -->
+</body>
+</html>

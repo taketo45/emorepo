@@ -1,0 +1,278 @@
+@import url('https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+body {
+    /* width: 430px; */
+    box-sizing: border-box;
+    margin: 0 auto;
+    border: 1px solid black;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+header {
+    background-color: rgb(248, 245, 236);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo {
+    /* margin-left: 25px; */
+    width: 100px;
+    height: 80px;
+    /* background-size: cover;  */
+}
+
+.header-logo > img {
+    max-width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.header-logo-p {
+    font-size: 10px;
+}
+
+.header-center {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.header-right {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    
+}
+
+.header-list {
+    display: flex;
+    float: left;
+    list-style: none;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-list li {
+    margin-right: 15px;
+}
+
+.header-item {
+    font-size: 13px;
+    margin-right: 10px;
+}
+
+.header-item a {
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+}
+
+.footer {
+    margin-top:105px;
+}
+
+.input {
+    height: 25px;
+    text-align:center;
+}
+
+
+
+input[type="text"]:focus {
+    outline: none;
+    border: 2px solid skyblue;
+}
+
+input[type="date"]:focus {
+    outline: none;
+    border: 2px solid skyblue;
+}
+
+.main-title {
+    margin-top: 20px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.sub-title {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 2px solid gray;
+}
+
+#training-form {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    top: 20px;
+}
+
+#training-form div {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#login-eria {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    top: 20px;
+}
+
+#login-eria div {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#display-form {
+    width: 100%;
+    height: 70px;
+    display: flex;
+    justify-content:flex-start;
+    align-items:center;
+    flex-direction: column;
+    position: relative;
+    top: 20px;
+}
+
+#display-btn {
+    width: 50px;
+    height: 25px;
+    margin-top: 0;
+    margin-left: 40px;
+}
+
+.mainerea {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* position: relative;
+    top: 20px; */
+}
+
+label {
+    display: inline-block;
+    width: 130px;
+    vertical-align: top;
+}
+
+.unittext {
+    width: 20px;
+}
+
+.inputtext {
+    padding-bottom:30px;
+    text-align:left;
+    
+}
+
+.word-input {
+    padding-left:5px;
+    border-radius: 10px;
+    border: 1px solid gray;
+    box-shadow: 2px 2px slategray;
+    width: 70%;
+    border-radius: 5px;
+}
+
+.btn {
+    background-color: rgb(248, 245, 236);
+    border: 1px solid gray;
+    box-shadow: 2px 2px slategray;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    box-shadow: none;
+}
+
+#submit-btn {
+    width: 90%;
+    margin-top: 20px;
+    height: 40px;
+}
+
+#login-btn {
+    width: 100px;
+    height: 40px;
+    margin-top: 0;
+}
+
+footer {
+    position: relative;
+}
+
+.footer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+#custom-btn {
+    width: 40%;
+    height: 30px;
+    margin-top: 10px;
+    position: absolute;
+    right: 10px;
+    bottom: 50px;
+}
+
+#logout-btn {
+    width: 45px;
+    height: 40px;
+    /* margin-top: px; */
+    position: relative;
+    right: 10px;
+    top: 0;
+}
+
+.div-display-date {
+    display: flex;
+    justify-content: space-around;
+}
+
+.display-label {
+    text-align: right;
+}
+
+.hiden {
+    display: none;
+}
+
+h2{
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+#div-activity {
+    margin-left: 25px;
+}
+
+#tbl-training {
+    margin: 0 auto;
+}
+
+#tbdy-training tr {
+    margin-top: 20px;
+}
+
+#tbdy-training tr td {
+    margin-right: 20px;
+}
