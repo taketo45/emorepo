@@ -18,14 +18,27 @@
     </header>
     <main>
         <h1 class="main-title">ログイン</h1>
-         <p class="sub-title">お使いのGoogleアカウントを選択してください</p>
+         <!-- <p class="sub-title">お使いのGoogleアカウントを選択してください</p> -->
         <div id="login-eria">
             <!-- LOGINボタン -->
-            <div id="mainerea">
+            <!-- <div id="mainerea">
                 <button id="login-btn" class="btn">LOGIN</button>
-            </div>
+            </div> -->
             <!--/LOGINボタン -->
-
+            <form name="form1" action="login_act.php" method="post" id="login-form">
+                <div>
+                    <label for="input-lid">ID:</label>
+                    <input type="text" name="lid" id="input-lid">
+                </div>
+                <div>
+                    <label for="input-lpw">PW:</label>
+                    <input type="password" name="lpw" id="input-lpw">
+                </div>
+                <div id="login-form-btn-box">
+                    <div></div>
+                    <input type="submit" value="ログイン" id="login-form-btn">
+                </div>
+              </form>
         </div>
 
     </main> 

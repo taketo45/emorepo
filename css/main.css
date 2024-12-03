@@ -213,6 +213,7 @@ label {
     width: 100px;
     height: 40px;
     margin-top: 0;
+    
 }
 
 footer {
@@ -234,6 +235,30 @@ footer {
     bottom: 50px;
 }
 
+#login-form {
+    width: 25%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#login-form > div {
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+#login-form > div:last-child {
+    display: flex;
+    justify-content:space-between;
+    margin-top: 25px;
+}
+
+#login-form-btn {
+    width: 30%;
+    height: 30px;
+}
+
 #logout-btn {
     width: 45px;
     height: 40px;
@@ -241,6 +266,11 @@ footer {
     position: relative;
     right: 10px;
     top: 0;
+}
+
+#login-form-btn-box {
+    display: flex;
+    justify-content:right;
 }
 
 .div-display-date {
@@ -275,4 +305,79 @@ h2{
 
 #tbdy-training tr td {
     margin-right: 20px;
+}
+
+#user_input_form_div {
+    margin: 0 auto;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    top: 20px;
+    /* border: 2px solid blue; */
+}
+
+#user_input_form_div > div {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    /* border: 2px solid red; */
+}
+
+#user_input_form_div > label {
+    margin-top: 20px;
+    display: flex;
+    justify-content: start;
+    /* border: 2px solid orange; */
+}
+
+
+#user_input_btn {
+    margin-top: 30px;
+    width: 70px;
+    position: relative;
+    right: 10px;
+    /* border: 2px solid orange; */
+}
+
+#mgmt_flg_div {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    /* border: 2px solid green; */
+}
+
+#mgmt_flg_div > div {
+    display: flex;
+    justify-content: center;
+    /* border: 2px solid gray; */
+}
+
+#mgmt_flg_div > div > .flg_elem {
+    margin: 5px auto;
+}
+
+#life_flg_div {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    /* border: 2px solid green; */
+}
+
+#life_flg_div > div {
+    display: flex;
+    justify-content: center;
+    /* border: 2px solid gray; */
+}
+
+#life_flg_div > div > .flg_elem {
+    margin: 5px auto;
+}
+
+#testinput {
+        /*コレ*/border: none;
+        background: #e7edf8;
 }

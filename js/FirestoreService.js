@@ -1,10 +1,9 @@
 import { getFirestore, collection, doc, Timestamp, addDoc, setDoc, updateDoc, arrayUnion, arrayRemove, deleteDoc, onSnapshot, query, orderBy, getDoc, getDocs, where, and, or, collectionGroup } 
 from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-
 import { app, db, storage } from './FirebaseInit.js';
 
-export class FirestoreClass{
+export class FirestoreService {
   docRef;
   constructor(collectionName,isDebug=false){
     this.isDebug = isDebug;

@@ -1,3 +1,10 @@
+//@@@@@@@@@@@@@@@@@@@  注意！！！！  @@@@@@@@@@@@@@@@@@@@@@@@@
+//本クラスは、比較検討の結果、「webspeechService.js」に置き換えられたため、
+//現在どの処理からも呼ばれていません。
+//変換精度が高いのでどこかのタイミングで処理に組み込むことを想定して
+//ファイルを保持しています。  by 生貝
+
+
 class SpeechToText {
     constructor(controls, isDebug = false) {
         this.recognition = null;
@@ -61,6 +68,7 @@ class SpeechToText {
             this.recognition.mediaRecorder.stop();
         }
         this.updateStatus('停止済み');
+        
     }
 
     clear() {

@@ -1,4 +1,5 @@
-class SpeechToText {
+
+export class WebSpeechService {
     constructor(controls, isDebug = false) {
         this.recognition = null;
         this.isRecording = false;
@@ -34,7 +35,7 @@ class SpeechToText {
                     // まだ録音中なら再開
                     this.recognition.start();
                 } else {
-                    this.updateStatus('停止済み');
+                    this.updateStatus('停止済み(init)');
                 }
             };
 
@@ -85,7 +86,12 @@ class SpeechToText {
         if (this.recognition) {
             this.recognition.stop();
         }
-        this.updateStatus('停止済み');
+        
+        if(!this.transcriptText.length || this.transcriptText === ""){
+            this.controls.$status.text('停止済み(stop):音声データが認識されませんでした。マイクを確認してください。');
+        } else {
+            this.updateStatus('停止済み(stop):');
+        }
     }
 
     clear() {
@@ -93,6 +99,8 @@ class SpeechToText {
         this.transcriptText = '';
         this.updateTranscript();
         this.updateStatus('クリアしました');
+        this.controls.$transcriptArea.empty();
+        this.controls.$reportArea.empty();
     }
 
     updateStatus(message) {

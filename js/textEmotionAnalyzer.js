@@ -1,5 +1,5 @@
-class EmotionAnalyzer {
-  constructor(isDebug = false) {
+export class TextEmotionAnalyzer {
+  constructor(config, isDebug = false) {
       this.isDebug = isDebug;
       this.emotionLabels = {
           anger: '怒り',
@@ -7,7 +7,8 @@ class EmotionAnalyzer {
           joy: '喜び',
           fear: '不安/恐れ'
       };
-      this.config = setupGoogleCloud();
+    //   this.config = setupGoogleCloud();
+      this.config = config;
       this.logDebug('constructor');
       if(!this.config) console.log("Authkeys.jsが存在しないか、その中にsetupGoogleCloud()が存在しません");
   }

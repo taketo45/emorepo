@@ -52,6 +52,7 @@ export const AuthService = {
         }
     },
 
+    //PHP移行にともない認証後の画面要素の表示は、PHP側で制御。本メッソドは利用しない。
     updateUI(user) {
         if (user) {
             $('#userName').text(`${user.displayName}さん`);

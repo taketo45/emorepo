@@ -236,3 +236,10 @@ video, #imagePreview {
 #reportArea {
     display: none;
 }
+
+#testinput {
+    
+        /*コレ*/border: none;
+        /* background: #f5f5f5; */
+    
+}
