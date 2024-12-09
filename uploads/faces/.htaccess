@@ -1,0 +1,5 @@
+# 画像ファイルのみアクセス許可
+<FilesMatch "\.(jpg|jpeg|png|gif)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch> 

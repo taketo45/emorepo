@@ -1,7 +1,3 @@
-import { db } from './FirebaseInit.js';
-import { collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { AuthService } from './authService.js';
-
 // 表示関連のユーティリティを管理するモジュール
 export const DisplayModule = {
     emotionChart: null,
@@ -16,7 +12,6 @@ export const DisplayModule = {
             return;
         }
 
-        // 現在の分析結果を表示
         response.responses[0].faceAnnotations.forEach((face, index) => {
             const $faceDiv = $('<div>', { class: 'face-result' });
             
@@ -32,14 +27,10 @@ export const DisplayModule = {
             $resultsContainer.append($faceDiv);
         });
 
-        // チャートの更新
         await this.updateEmotionChart(response.responses[0].faceAnnotations[0]);
-
-        // 履歴に追加
         this.addToHistory(response);
     },
 
-    // 感情レベルの数値変換
     getEmotionScore(likelihood) {
         const scores = {
             'VERY_UNLIKELY': 0,
@@ -51,7 +42,6 @@ export const DisplayModule = {
         return scores[likelihood] || 0;
     },
 
-    // 感情レベルの文字変換
     getEmotionLevel(likelihood) {
         const levels = {
             'VERY_UNLIKELY': '非常に低い',
@@ -63,12 +53,7 @@ export const DisplayModule = {
         return levels[likelihood] || '不明';
     },
 
-    // チャートの更新
     async updateEmotionChart(currentFace) {
-        // 過去のデータを取得
-        const historicalData = await this.getHistoricalEmotionData();
-        
-        // 現在のデータを準備
         const currentData = {
             joy: this.getEmotionScore(currentFace.joyLikelihood),
             anger: this.getEmotionScore(currentFace.angerLikelihood),
@@ -76,7 +61,9 @@ export const DisplayModule = {
             surprise: this.getEmotionScore(currentFace.surpriseLikelihood)
         };
 
-        // チャートの描画
+        // PHPから過去のデータを取得
+        const historicalData = await this.getHistoricalEmotionData();
+        
         const ctx = document.getElementById('emotionChart').getContext('2d');
         
         if (this.emotionChart) {
@@ -118,46 +105,17 @@ export const DisplayModule = {
         });
     },
 
-    // 過去の感情データを取得
     async getHistoricalEmotionData() {
         try {
-            const q = query(
-                collection(db, 'analysisResults'),
-                orderBy('timestamp', 'desc'),
-                limit(5)
-            );
-
-            const querySnapshot = await getDocs(q);
-            let totals = { joy: 0, anger: 0, sorrow: 0, surprise: 0 };
-            let count = 0;
-
-            querySnapshot.forEach(doc => {
-                const data = doc.data();
-                const face = data.result.responses[0].faceAnnotations[0];
-                if (face) {
-                    totals.joy += this.getEmotionScore(face.joyLikelihood);
-                    totals.anger += this.getEmotionScore(face.angerLikelihood);
-                    totals.sorrow += this.getEmotionScore(face.sorrowLikelihood);
-                    totals.surprise += this.getEmotionScore(face.surpriseLikelihood);
-                    count++;
-                }
-            });
-
-            // 平均を計算
-            if (count > 0) {
-                Object.keys(totals).forEach(key => {
-                    totals[key] = totals[key] / count;
-                });
-            }
-
-            return totals;
+            const response = await fetch('/getHistoricalEmotions.php');
+            const data = await response.json();
+            return data.success ? data.emotions : { joy: 0, anger: 0, sorrow: 0, surprise: 0 };
         } catch (error) {
             console.error('Error getting historical data:', error);
             return { joy: 0, anger: 0, sorrow: 0, surprise: 0 };
         }
     },
 
-    // 履歴への追加
     addToHistory(response) {
         const $historyContainer = $('#historyContainer');
         const $historyEntry = $('<div>', { class: 'history-entry' });
@@ -172,7 +130,6 @@ export const DisplayModule = {
         $historyContainer.prepend($historyEntry);
     },
 
-    // プレビュー画像の更新
     updatePreview(imageData) {
         $('#imagePreview')
             .attr('src', imageData)
@@ -180,11 +137,8 @@ export const DisplayModule = {
         $('video').hide();
     },
 
-    // プレビューのリセット
     resetPreview() {
         $('#imagePreview').hide();
         $('video').show();
     }
-
-    
 };

@@ -1,9 +1,12 @@
 <?php
+
+define('IS_DEBUG', true);
+define('DEBUG_MODE_AI', true);
+define('DEBUG_MODE_DB', false);
 //XSS対応（ echoする場所で使用！それ以外はNG ）
 function h($str){
     return htmlspecialchars($str, ENT_QUOTES);
 }
-
 
 //SQLエラー
 function sql_error($stmt){

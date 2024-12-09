@@ -37,6 +37,7 @@ if($pw){
   $_SESSION["mgmt_flg"] = $value['mgmt_flg'];
   $_SESSION["name"]      = $value['name'];
   $_SESSION["lid"]       = $value['lid'];
+  $_SESSION["uid"]       = $value['id'];
   //Login成功時
   redirect("userInformation.php");
 

@@ -58,7 +58,7 @@ $json = json_encode($values,JSON_UNESCAPED_UNICODE);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>エモレポ ユーザー管理画面</title>
   <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body id="main">
 <!-- Head[Start] -->

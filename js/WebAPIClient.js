@@ -23,7 +23,8 @@ export class WebApiClient {
         formData.append(key, value);
     }
 
-    this.logDebug('postFormData', { url, data });
+    this.logDebug('postFormData', { url, data });  //ここはOK
+    this.logDebug('FormData', { url, formData });  //
 
     const response = await fetch(url, {
         method: 'POST',
@@ -39,7 +40,7 @@ export class WebApiClient {
 
     // 非同期のチェーンを維持するための実装（念の為）
     return response.text().then(responseText => {
-        this.logDebug('postFormData:result', null, responseText);
+        this.logDebug('postFormData:result', null, responseText); 
         return JSON.parse(responseText);
     });
   }

@@ -77,7 +77,7 @@ class DatabaseController {
                     //?のパラメータ方式への対応。PDOは1から始まるインデックスで指定する必要があるが配列のキーは０から開始するので＋１している
                     $stmt->bindValue($paramKey, $value, $paramType);
                     
-                    if ($this->isDebug) {
+                if ($this->isDebug) {
                       error_log("[DEBUG] バインド: " . $paramKey . " = " . print_r($value, true) . " (型: " . $paramType . ")");
                     }
                 }
@@ -108,6 +108,10 @@ class DatabaseController {
      * INSERT/UPDATE/DELETE文の実行用メソッド
      */
     public function modify($sql, $params = null) {
+        if ($this->isDebug) {
+            error_log("SQL: " . $sql);
+            error_log("Parameters: " . print_r($params, true));
+        }
         $stmt = $this->execute($sql, $params);
         return $stmt->rowCount();
     }

@@ -8,7 +8,7 @@ export class ImageEmotionAnalyzer {
     constructor(config, isDebug) {
         this.isDebug = isDebug;
         this.config = config;
-        console.log("config: " + config);
+        // console.log("config: " + config);
     }
 
     logDebug(methodName, params = null, result = null) {

@@ -1,11 +1,8 @@
 <?php
-
 session_start();
 include "lib/funcs.php";
 require_once('../../emorepoconfig/config.php');
 sschk();
-
-
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -28,21 +25,48 @@ sschk();
             <h2>えもれぽ</h2>
         </div>
         <div class="header-right">
-            <!-- ログイン状態表示エリア -->
             <div id="authContainer" class="auth-container">
                 <div id="userInfo" style="display: none;">
-                    <!-- <span id="userName"></span> -->
                     <?=$_SESSION["name"]?>さん、こんにちは
-                    <a class="btn" href="index.php">レポート管理</a>
+                    <a class="btn" href="userreport.php">レポート管理</a>
                     <?php if($_SESSION["mgmt_flg"]=="1"){ ?>
                     <a class="btn" href="users.php">ユーザー管理</a>
                     <?php } ?>
                     <button id="logoutButton" class="btn" onclick="location.href='logout.php'">ログアウト</button>
                 </div>
-                <!-- <button id="loginButton" class="btn">Googleでログイン</button> -->
+            </div>
         </div>
     </header>
 
+    <?php if(IS_DEBUG&&DEBUG_MODE_DB){ ?>
+    <div class="debug-panel">
+        <h4>デバッグパネル</h4>
+        <div class="debug-form">
+            <div class="form-group">
+                <label for="debug-speech">音声テキスト:</label>
+                <textarea id="speeech-testinput" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="debug-gemini">AIレポート:</label>
+                <textarea id="debug-gemini" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="debug-text-emotion">テキスト感情分析結果:</label>
+                <textarea id="debug-text-emotion" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="debug-image-emotion">画像感情分析結果:</label>
+                <textarea id="debug-image-emotion" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="debug-image">画像データ（Base64）:</label>
+                <textarea id="debug-image" class="form-control"></textarea>
+            </div>
+            <button id="debugbtn" class="btn btn-warning">デバッグ送信</button>
+        </div>
+        <div id="debugresults" class="result-section"></div>
+    </div>
+    <?php } ?>
     <div class="container">
         <h3>ムービーレポート入力画面</h3>
         <div class="preview-container">
@@ -54,9 +78,11 @@ sschk();
             <button id="stopButton" disabled>日報入力停止</button>
             <button id="clearButton" disabled>クリア</button>
             <button id="analyzebtn" disabled>日報を提出</button>
-            <!-- <textarea id="testinput" hidden></textarea> -->
+            <?php if(IS_DEBUG){ ?>
+            <button id="debugbtn">デバグ用</button>
             <textarea id="testinput"></textarea>
-            <!-- <a id="download" download="capture.png">写真のDL</a> -->
+            <div id="debugresults" class="result-section"></div>
+            <?php } ?>
         </div>
         <div id="status">待機中...</div>
         <textarea id="transcriptArea" readonly></textarea>
@@ -78,34 +104,30 @@ sschk();
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <!-- <script src="js/Authkeys.js"></script> -->
-    <!-- <script src="js/webspeechService.js"></script> -->
     <script src="js/emotionalDictionary.js"></script>
-    <!-- <script src="js/textEmotionAnalyzer.js"></script> -->
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="js/camera.js"></script>
-    <!-- <script type="module" src="js/imageAnalysis.js"></script> -->
-    <script type="module" src="js/displayUtils.js"></script>
     <script type="module">
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
-        from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { WebApiClient } from './js/WebAPIClient.js';
         import { CameraModule } from './js/camera.js';
-        import { TextEmotionAnalyzer } from './js/TextEmotionAnalyzer.js';
+        // import { TextEmotionAnalyzer } from './js/TextEmotionAnalyzer.js';
+        import { TextEmotionResultRenderer } from './js/TextEmotionResultRenderer.js';
         import { ImageEmotionAnalyzer } from './js/ImageEmotionAnalyzer.js';
         import { WebSpeechService } from './js/WebSpeechService.js';
         import { DisplayModule } from './js/displayUtils.js';
-        // import { db } from './js/firebase.js';
-        import { AuthService } from './js/authService.js';
+        // import { AuthService } from './js/authService.js';
         import {auth, provider, app, db, storage, googleAuthLaterProcess, logOut} from './js/FirebaseInit.js';
-        // import { FirestoreService } from './js/FirestoreService.js';
-        import { GeminiAPI} from './js/GeminiAPIClass.js';
+        import { EmotionScoreCalculator } from './js/EmotionScoreCalculator.js';
 
-        //デバグモードで動かす場合は、true。コメントアウトすれば通常モード
         const isDebug = <?=IS_DEBUG?>;
 
-        // HTML要素の取得をオブジェクトにまとめる
+        if(isDebug) {
+            console.log('@@@@@@@ Debug Mode @@@@@@@');
+            const debuginput = localStorage.getItem('debug');
+            if(debuginput) {
+                $('#testinput').val(debuginput);
+            }
+        }
+
         const controls = {
             $startButton: $('#startButton'),
             $stopButton: $('#stopButton'),
@@ -124,26 +146,17 @@ sschk();
             $output: $('#result'),
             $emoreport: $('#emoreport')
         }
-        const EAconfig = {
-            apiKey: '<?=GOOGLE_CLOUD_API_KEY?>',
-            endpoint: '<?=GOOGLE_CLOUD_ENDPOINT?>'
-        };
-        const IAconfig = {
-            apiKey: '<?=VISION_API_KEY?>',
-            endpoint: '<?=VISION_API_ENDPOINT?>'
-        }
+
+
 
         const webSpeech = new WebSpeechService(controls, isDebug);
-        const textAnalyzer = new TextEmotionAnalyzer(EAconfig, isDebug);
-        const imageAnalyzer = new ImageEmotionAnalyzer(IAconfig, isDebug);
-        const geminiAPI = new GeminiAPI('<?=GEMINI_API_KEY?>', isDebug);
+        // const imageAnalyzer = new ImageEmotionAnalyzer(IAconfig, isDebug);
 
-        const storeinfo = {
-            collection: "emoreportusers",
-            uid: "",
-            subcollection: "report",
-            yeardate: ""
-        }
+        const domain = location.origin;
+        const path = "/emorepo";
+        const domainpath = domain + path;
+        const AiFrontPath = '/airequest.php';
+        const RequestTextAnalyzePath = '/RequestTextAnalyze.php';
 
         const reportinfo = {
             uid: null,
@@ -152,279 +165,297 @@ sschk();
             reportformatted: null,
             faceimage: null,
             imageanalyzed: null,
-        }
+            textanalyzed: null,
+            documentScore: null,
+            terminologyScore: null,
+            emotionScore: null
+        };
         let inputText = "";
         let beforeInputText = "";
         const lid = '<?=$_SESSION["lid"]?>';
+        console.log('lid:', lid);
 
-        $(document).ready(function() {
-            // onAuthStateChanged(auth, async (user) => {
-            //     if(!user){
-            //         logOut(auth);
-            //     }
-            //     // console.log(user);
-                
-            // });  
-            
-            (async function(){  //即時関数 開始
-                // *********↓↓Firestore関連の初期処理*********
-                // updateUI(user);
-                updateUI();
-                // const firestore = new FirestoreService(storeinfo.collection, isDebug);
-                // const users = await firestore.getDocumentIds();
-                // if(!users.includes(user)) {
-                //     firestore.setDocToCollection(user);
-                //     storeinfo.uid = user.uid;
-                //     reportinfo.uid = user.uid;
-                // }
-                // AuthService.setupEventListeners();
-                // await AuthService.updateUI(user);
+        const scoreCalculator = new EmotionScoreCalculator();
 
-                
-                
-                // *********↑↑Firestore関連の初期処理*********
+        //TODO:API送受信とDBへの登録処理をコントロールする機能をPHPに実装する。
 
-                // *********↓↓onAuthStateChanged()の内側にいれる*********
+        $(document).ready(async function() {
+            updateUI();
 
-                
                 
                 //録音開始ボタン
-                controls.$startButton.on('click',async function() {
-                    await CameraModule.init();
-                    beforeInputText = inputText;
-                    webSpeech.start();
-                    analyzeEL.$emoreport.hide();
+            controls.$startButton.on('click',async function() {
+                console.log('Start Recording');
+                await CameraModule.init();
+                beforeInputText = inputText;
+                webSpeech.start();
+                analyzeEL.$emoreport.hide();
+            });
 
-                });
-
-                //録音停止ボタン
-                controls.$stopButton.on('click', async function() {
+            //録音停止ボタン
+            controls.$stopButton.on('click', async () => {
+                try {
+                    // 録音停止処理
                     webSpeech.stop();
+                    
+                    // UI更新：処理中表示
+                    controls.$status.html(`
+                        <div class="processing-status">
+                            <div class="spinner-border text-primary"></div>
+                            <span class="ml-2">日報作成中...</span>
+                        </div>
+                    `);
+                    controls.$transcriptArea.prop('readonly', true);
+                    controls.$stopButton.prop('disabled', true);
+                    controls.$clearButton.prop('disabled', true);
+                    
+                    // 画像キャプチャ
+                    const imageData = CameraModule.captureImage();
+                    DisplayModule.updatePreview(imageData);
+                    
+                    // 日報生成用のデータ準備
+                    const inputText = controls.$transcriptArea.val().trim();
+                    if(isDebug) {
+                        reportinfo.reportoriginal = inputText || controls.$testinput.val()  ;
+                    } else {
+                        reportinfo.reportoriginal = inputText;
+                    }
+                    
+                    // AI Request PHP向けのインスタンス生成
+                    const AIapiClient = new WebApiClient(domainpath, isDebug);
+                    console.log('Sending request to:', AiFrontPath);
+                    const textObj = {};
+                    if(isDebug) {
+                        textObj.speechtext = inputText || controls.$testinput.val();
+                    } else {
+                        textObj.speechtext = inputText;
+                    }
 
-                //えもめーたー処理マージ
-                const imageData = CameraModule.captureImage();
-                DisplayModule.updatePreview(imageData);
-                
-                // ダウンロードリンクの更新
-                // emometerEL.$download.attr('href', imageData);
+                    const response = await AIapiClient.postFormData(AiFrontPath, textObj);
+                    console.log('Received response:', response);
 
-                //Gemini 送信前処理・送信処理
-                inputText = controls.$transcriptArea.val().trim(); //分析ボタンが押下されるまでグローバル変数に保持
-                // if(!inputText.legth) {
-                //     console.log("No Input!!");
-                //     controls.$status.text('音声が入力されていません。マイクを確認ください。');
-                //     return;
-                // }
-                
-                //喋らなくてもテストできるように追加
-                //#testinputのhiddenを解除してテキストをキー入力することで利用
-                inputText += controls.$testinput.val();
-                
-                if(!inputText || inputText === "") {
-                    console.log('No Audio Data!: Please talk something.');
-                    return;
+                    if (response && response.success) {
+                        const formattedText = response.text.replace(/<\/?report>/g, ''); 
+                        console.log('Formatted Text:', formattedText);
+                        controls.$reportArea.val(formattedText);
+                        controls.$reportArea.show();
+                        controls.$transcriptArea.hide();
+                        reportinfo.reportformatted = formattedText;
+                        controls.$status.text('日報が作成されました');
+                        analyzeEL.$start.prop('disabled', false);
+                    } else {
+                        throw new Error(response?.error || '日報の生成に失敗しました');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error in stop recording:', error);
+                    controls.$status.text('エラーが発生しました');
+                    alert('日報の作成に失敗しました: ' + error.message);
+                } finally {
+                    controls.$clearButton.prop('disabled', false);
                 }
+            });
 
-                //TODO: 下記処理は機能していないので、要Debug
-                if(inputText === beforeInputText){
-                    console.log('No Audio Data added!');
-                    return;
-                }
-                reportinfo.reportoriginal = inputText||" ";
-                controls.$status.val('処理中...');
+            //クリアボタン
+            controls.$clearButton.on('click',async function() {
+                webSpeech.clear();
+                controls.$transcriptArea.val('');
+                controls.$transcriptArea.show();
+                controls.$reportArea.val('');
+                controls.$reportArea.hide();
+                beforeInputText = "";
+                inputText = "";
+                await CameraModule.reset();
+                DisplayModule.resetPreview();
+                analyzeEL.$start.prop('disabled', true);
+                controls.$clearButton.prop('disabled', true);
+                controls.$transcriptArea.prop('readonly', true);
+            });
 
-                //@@@@@@@@@@@@  PHP側のAI Web Serviceを呼び出す @@@@@@
-
-                const domain = location.origin;
-                const path = "/emorepo";
-                const domainpath = domain + path;
-                const AiFrontPath = '/airequest.php';
-
-                const AipostData = {
-                    speechtext: inputText,
+            //デバグボタン DEBUGモードのみ表示
+            $('#debugbtn').on('click', async function() {
+                const debugData = {
+                    speechText: $('#speeech-testinput').val() || 'デバッグテスト',  // デフォルト値を設定
+                    dailyReport: $('#debug-gemini').val() || 'デバッグレポート',  // デフォルト値を設定
+                    textEmotionResult: $('#debug-text-emotion').val(),
+                    imageEmotionResult: $('#debug-image-emotion').val(),
+                    imageUrl: $('#debug-image').val()
                 };
 
+                // 必須フィールドの検証
+                if (!debugData.speechText || !debugData.dailyReport) {
+                    $('#debugresults').html('エラー：音声テキストと日次報告は必須です');
+                    return;
+                }
 
-                const apiClient = new WebApiClient(domainpath, isDebug);
-
-                apiClient.postFormData(AiFrontPath, AipostData)
-                .then(response => {
-                    // controls.$reportArea.html(response);
-                    if (response.success) {
-                        controls.$reportArea.val(response.text);
-                        //ここにLocalstrageの処理を追記
-                        reportinfo.reportformatted = response.text; //分析ボタンが押下されるまでグローバルオブジェクトに保持
-
+                try {
+                    const debugDBapiClient = new WebApiClient(domainpath, isDebug);
+                    const saveResponse = await debugDBapiClient.postFormData('/savereport.php', debugData);
+                    
+                    if (saveResponse.success) {
+                        $('#debugresults').html('保存成功：' + JSON.stringify(saveResponse));
                     } else {
-                        controls.$reportArea.val('');
-                        this.showError(response.error);
+                        $('#debugresults').html('保存失敗：' + saveResponse.error);
                     }
-                })
-                .catch(error => {
-                    console.error('API Error:', error);
-                    controls.$reportArea.val('');
-                })
-                .finally (() => {
-                    // 分析ボタン、クリアボタンを有効化
-                    analyzeEL.$start.prop('disabled', false);
-                    controls.$clearButton.prop('disabled', false);
-                    controls.$transcriptArea.hide();
+                } catch (error) {
+                    $('#debugresults').html('エラー発生：' + error.message);
+                    console.error('Debug Error:', error);
+                }
+            });
+
+            //日報提出（感情分析）ボタン
+            analyzeEL.$start.on('click', async () => {
+                try {
+                    // 処理中表示
+                    const $button = analyzeEL.$start;
+                    $button.prop('disabled', true)
+                        .html(`
+                            <div class="d-flex align-items-center">
+                                <div class="spinner-border spinner-border-sm mr-2"></div>
+                                <span>処理中...</span>
+                            </div>
+                        `);
                     
-                    controls.$reportArea.attr('length', '700px').show();
-                });
-
-                //@@@@@@@@@@@@  PHP側のAI Web Service呼び出し終わり @@@@@@
-
-
-                // const date = new Date();
-                // const yyyymmddDate = date.toLocaleDateString("ja-JP");
-
-                // const geminiControlText = `
-
-                // 上記は、社員の日次報告の基礎情報です。
-                // 日次報告の基礎情報に下記の要素が含まれていない場合は、含まれていない要素を追加で話すように促して、処理を停止してください。
-                // 必要な要素
-                // ・本日の業務
-                // ・明日の予定
-                // ・現在の注力テーマまたは課題事項
-
-                // 日次報告の基礎情報の中に、必要な要素がすべて含まれていたら内容を、マークダウン記法を用いてビジネスの日報にしてください。あなたは役所の人間です。勝手に要素を足したり、用語から連想されるような内容を付け足さないでください。記載されている要素を報告書の形式にまとめ直すだけにしてください。
-                // 日付は、${yyyymmddDate}、報告者は<?=$_SESSION["name"]?>として記載してください。
-                // ビジネス日報の最後、もともとの記載内容をオリジナルの報告内容として最後に付記してください。
-                // `;
-
-                // inputText += geminiControlText;
-
-                // try {
-                //     const response = await geminiAPI.generateResponse(inputText);
-                    
-                //     if (response.success) {
-                //         controls.$reportArea.val(response.text);
-                //         //ここにLocalstrageの処理を追記
-                //         reportinfo.reportformatted = response.text; //分析ボタンが押下されるまでグローバルオブジェクトに保持
-
-                //     } else {
-                //         controls.$reportArea.val('');
-                //         this.showError(response.error);
-                //     }
-                // } catch (e) {
-                //     console.error('UI Error:', e);
-                //     this.showError('予期せぬエラーが発生しました');
-                //     controls.$reportArea.val('');
-                // } finally {
-                //     // 分析ボタン、クリアボタンを有効化
-                //     analyzeEL.$start.prop('disabled', false);
-                //     controls.$clearButton.prop('disabled', false);
-                //     controls.$transcriptArea.hide();
-                    
-                //     controls.$reportArea.attr('length', '700px').show();
-                // }
-                
-                });
-
-                //クリアボタン
-                controls.$clearButton.on('click',async function() {
-                    webSpeech.clear();
-
-                    controls.$transcriptArea.val('');
-                    controls.$reportArea.val('');
-                    beforeInputText = "";
-                    inputText = "";
-
-                    //えもめーたー処理マージ
-                    await CameraModule.reset();
-                    DisplayModule.resetPreview();
-
-                    // 分析ボタン、クリアボタンを無効化
-                    analyzeEL.$start.prop('disabled', true);
-                    controls.$clearButton.prop('disabled', true);
-                    controls.$transcriptArea.prop('readonly', true);
-                });
-
-
-                //感情分析ボタン
-                analyzeEL.$start.on('click',async ()=>{
                     analyzeEL.$emoreport.show();
-
-                    ///////////////ここから///////////////
-                    const inputtext = analyzeEL.$input.val();
-
-                    const result = await textAnalyzer.analyzeText(inputtext);
-
-                    // 現在日付を取得
-                    reportinfo.datetime = new Date();
-                    const ymd = new Date().toLocaleDateString('ja-JP').split('/').join(''); // yyyymmdd形式で取得
-                    const time = new Date().toLocaleTimeString('ja-JP', {hour12: false}).split(':').join('');   // hhmmss形式で取得
-                    const curDatetime = ymd + time;
-                    storeinfo.yeardate = curDatetime; //必ずsetDocToSubColloction()より前に処理する。
-
-                    // firestore.setDocToSubColloction(storeinfo, "userid", storeinfo.uid);
-                    // firestore.setDocToSubColloction(storeinfo, "datetime", newdate);
-                    // firestore.setDocToSubColloction(storeinfo, "reportoriginal", reportoriginal);
-                    // firestore.setDocToSubColloction(storeinfo, "reportformatted", reportformatted);
-
-                    // firestore.setDocToSubColloction(storeinfo, "textanalyzed", result);
-                    reportinfo.textanalyzed = result;
-                    //ここで文書感情分析結果を、firestore格納処理
-
-                    const html = textAnalyzer.generateResultHtml(result);
-                    analyzeEL.$output.html(html);
-                    ///////////////ここまでControlerClass///////////////
-
-                    //えもめーたー処理のマージ
-                    const imageData = controls.$faceImage.attr('src');
-                    //ここにCloud storageの処理
-                    //ここにstores格納処理 → reportinfoへ投入しAnalyzeボタン押下を待つ
-                    reportinfo.faceimage = "storage URL";
-
-                    try {
-                        const response = await imageAnalyzer.analyzeFaceAndEmotions(imageData);
-                        console.log(response);
-                        reportinfo.imageanalyzed = response;
-                        // console.log(storeinfo);
-                        console.log(reportinfo);
-                        // firestore.setDocToSubColloction(storeinfo, "imageanalyzed", response);
-                        DisplayModule.displayResults(response);
-                    } catch (error) {
-                        console.error('Failed to analyze image:', error);
-                        alert('画像の分析に失敗しました: ' + error.message);
-                    }
-                    // const success = await firestore.setDocToSubCollectionAll(reportinfo);
-                    // if (success) {
-                    //     console.log('Document saved successfully');
-                    // }
                     
+                    // 日報提出ボタンを無効化し、ローディング表示
+                    analyzeEL.$start.prop('disabled', true)
+                        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 日報提出中...');
+                    
+                    reportinfo.reportformatted = controls.$reportArea.val();
+                    // テキスト感情分析の実行と待機
+                    const textAnalysisResult = await textEmotionAnalyze(reportinfo.reportoriginal);
+                    if (!textAnalysisResult || !textAnalysisResult.data) {
+                        throw new Error('テキスト分析結果が不正です');
+                    }
+                    
+                    reportinfo.textanalyzed = textAnalysisResult;
+                    const scores = scoreCalculator.calculateScores(
+                        textAnalysisResult.data,
+                        reportinfo.reportoriginal
+                    );
+                    
+                    reportinfo.documentScore = scores.documentScore;
+                    reportinfo.terminologyScore = scores.terminologyScore;
+                    
+                    // 画像分析の実行
+                    const imageData = controls.$faceImage.attr('src');
+                    if (!imageData) {
+                        throw new Error('画像データが見つかりません');
+                    }
+                    
+                    // まず画像をアップロード
+                    const imageApiClient = new WebApiClient(domainpath, isDebug);
+                    const uploadResponse = await imageApiClient.postFormData('/upload_image.php', {
+                        imageData: imageData
+                    });
 
-                    // 分析ボタン、クリアボタンを無効化
-                    analyzeEL.$start.prop('disabled', true);
-                    controls.$clearButton.prop('disabled', true);
-                    controls.$transcriptArea.prop('readonly', true);
-                });
+                    if (!uploadResponse.success) {
+                        throw new Error('画像のアップロードに失敗しました');
+                    }
 
-                controls.$logout.on('click', () =>  {
-                    if(!user) alert('ログインしていません');
-                    logOut(auth);
-                });
-                // *********↑↑onAuthStateChanged()の内側にいれる*********
-            })();    //即時関数 終了
+                    reportinfo.faceimage = uploadResponse.imageUrl;
+
+                    // 画像分析を実行
+                    const imageAnalysisResult = await imageApiClient.postFormData('/RequestImageAnalyze.php', {
+                        imageUrl: uploadResponse.imageUrl
+                    });
+
+                    if (!imageAnalysisResult.success) {
+                        throw new Error(imageAnalysisResult.error || '画像分析に失敗しました');
+                    }
+
+                    reportinfo.imageanalyzed = imageAnalysisResult.data;
+                    reportinfo.emotionScore = scoreCalculator.calculateEmotionScore(imageAnalysisResult);
+
+                    // PHPの受信時に問題を起こす\nをエスケープ
+                    const escapedReport = reportinfo.reportformatted
+                        .replace(/\\/g, '\\\\')
+                        .replace(/\n/g, '\\n');
+                    // レポートデータのDB保存
+                    const reportData = {
+                        speechText: reportinfo.reportoriginal,
+                        dailyReport: escapedReport,
+                        textEmotionResult: JSON.stringify(reportinfo.textanalyzed),
+                        imageEmotionResult: JSON.stringify(imageAnalysisResult),
+                        imageUrl: uploadResponse.imageUrl,  // reportinfo.faceimage から変更
+                        documentScore: reportinfo.documentScore,
+                        terminologyScore: reportinfo.terminologyScore,
+                        emotionScore: reportinfo.emotionScore
+                    };
+                    if(isDebug) {
+                        console.log('Report Data:');
+                        console.log(reportData);
+                    }
+    
+                    const DBapiClient = new WebApiClient(domainpath, isDebug);
+                    const saveResponse = await DBapiClient.postFormData('/savereport.php', reportData);
+                    
+                    if (saveResponse.success) {
+                        window.location.href = `reportdetail.php?id=${saveResponse.reportId}`;
+                    } else {
+                        throw new Error(saveResponse?.error || 'レポートの保存に失敗しました');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error in report submission:', error);
+                    alert(error.message || '処理中にエラーが発生しました');
+                } finally {
+                    // ボタンの状態を元に戻す
+                    analyzeEL.$start.prop('disabled', false).html('日報を提出');
+                }
+            });
+
+            controls.$logout.on('click', () =>  {
+                if(!user) alert('ログインしていません');
+                logOut(auth);
+            });
+        });    //即時関数 終了
 
 
 
-        });  //$(document)の終了
 
-        // function updateUI(user) {
+        async function textEmotionAnalyze(text) {
+            if (!text) {
+                throw new Error('分析するテキストが空です');
+            }
+
+            const textPostData = { 
+                textanalyzerequest: text,
+                type: 'emotion'  // リクエストタイプを明示
+            };
+
+            const textApiClient = new WebApiClient(domainpath, isDebug);
+            const renderer = new TextEmotionResultRenderer(analyzeEL, isDebug);
+
+            try {
+                if (isDebug) {
+                    console.log('Sending text analysis request:', textPostData);
+                }
+
+                const response = await textApiClient.postFormData(RequestTextAnalyzePath, textPostData);
+                
+                if (response.success) {
+                    controls.$reportArea.val(response.text);
+                    const html = renderer.generateResultHtml(response.data);
+                    analyzeEL.$output.html(html);
+                    // reportinfo.reportformatted = response.text;
+                    
+                    // 分析結果を返す
+                    return response;
+                } else {
+                    throw new Error(response.error || 'テキスト分析に失敗しました');
+                }
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
         function updateUI() {
-            // if (user) {
-                // TODO: PHP認証への変換
-                // $('#userName').text(`${user.displayName}さん`);
                 $('#userInfo').show();
                 $('#loginButton').hide();
                 $('#results').show();
-            // } else {
-            //     $('#userInfo').hide();
-            //     $('#loginButton').show();
-            //     $('#results').hide();
-            // }
         }
 
     </script>
