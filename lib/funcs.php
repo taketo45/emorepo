@@ -6,6 +6,7 @@ define('DEBUG_MODE_DB', false); // userInformation.phpのデータベース接�
 define('DEBUG_MODE_ANALYZE', false);  // reportdetail.phpの表情分析・テキスト分析データの詳細表示
 //XSS対応（ echoする場所で使用！それ以外はNG ）
 function h($str){
+    if(!$str||$str==""||$str=="undefined...") return "報告事項なし";  // 空の場合は空文字列を返す 
     return htmlspecialchars($str, ENT_QUOTES);
 }
 

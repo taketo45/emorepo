@@ -1,0 +1,451 @@
+/* workwell-dashboard.css */
+
+/* Header Styles */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 2.5rem;
+    border-bottom: 1px solid #e7f3ec;
+    background-color: #f8fcfa;
+}
+
+/* Hamburger Menu Icon */
+.menu-button {
+  display: none;  /* デフォルトでは非表示 */
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.menu-button svg {
+  width: 24px;
+  height: 24px;
+  color: #0e1b13;
+}
+
+/* ハンバーガーメニューのオーバーレイ */
+.menu-overlay {
+  display: none;
+  position: fixed;
+  top: 80px;  /* ヘッダーの高さに合わせる */
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 80px);
+  background-color: rgba(0, 0, 0, 0.5);  /* 半透明の黒色オーバーレイ */
+  z-index: 100;
+}
+
+/* ナビゲーションメニュー */
+.nav-links.show {
+  display: flex;
+  z-index: 101;  /* オーバーレイより上に表示 */
+  background-color: #f5f7f6;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ヘッダー全体の高さも調整 */
+.dashboard-header {
+  padding: 1.25rem 2.5rem;  /* パディングを増加 */
+  display: flex;
+  align-items: center;  /* 中央揃えを確実に */
+  height: 80px;  /* 固定高さを設定 */
+}
+/* Left Section */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.app-logo {
+  width: 56px;  /* サイズ拡大 */
+  height: 56px;
+}
+
+.app-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+
+.brand-name {
+  font-family: "Nico Moji";
+  font-size: 1.5rem;  /* フォントサイズ拡大 */
+  font-weight: normal;
+  color: #0e1b13;
+  margin-left: 0.5rem;
+}
+
+/* Right Section */
+.nav-container {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.header-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+    color: #0e1b13;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: var(--font-base);
+}
+
+/* Icon Buttons */
+.icon-button {
+    color: #0e1b13;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* Navigation Links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+}
+
+.nav-link {
+    color: #0e1b13;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    font-family: var(--font-base);
+}
+
+.nav-link:hover {
+    opacity: 0.7;
+}
+
+/* Auth Container */
+.auth-container {
+    display: flex;
+    align-items: center;
+}
+
+#userInfo {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+}
+
+#logoutButton {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #0e1b13;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font-base);
+}
+
+#logoutButton:hover {
+    opacity: 0.7;
+}
+
+/* Main Content Layout */
+.dashboard-content {
+  padding: 2rem 2.5rem;
+  display: flex;
+  gap: 2rem;
+  min-height: calc(100vh - 80px);  /* ヘッダーの高さを引いた値 */
+}
+
+/* Control Panel (Left Side) */
+.control-panel {
+  position: fixed;
+  left: 2.5rem;
+  top: calc(80px + 2rem);  /* ヘッダーの高さ + padding */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 200px;
+}
+
+
+/* Main Content Container */
+.content-container {
+  margin-left: 224px;
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 224px;
+}
+
+
+.control-panel button {
+    padding: 0.75rem 1rem;
+    border: 1px solid #61af7f;
+    background-color: #ddece5;
+    color: #2f8854;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;  /* 幅を固定 */
+    min-width: auto;  /* min-widthを解除 */
+}
+
+.control-panel button:hover {
+    background-color: #e7f3ec;
+}
+
+.control-panel button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Main Content Wrapper */
+.content-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Video/Preview Area */
+.preview-container {
+  width: 100%;
+  max-width: 800px;  /* 最大幅を制限 */
+  margin: 0 auto;
+  aspect-ratio: 16/9;
+  background-color: #f8fcfa;
+  border: 1px solid #d0e7d9;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+#video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#imagePreview {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Status and Text Areas */
+.status-text-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#status {
+    padding: 0.75rem 1rem;
+    background-color: #f8fcfa;
+    border: 1px solid #d0e7d9;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: #0e1b13;
+}
+
+.text-areas {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#transcriptArea, #reportArea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border: 1px solid #d0e7d9;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    resize: vertical;
+    background-color: #fff;
+}
+
+#transcriptArea:read-only {
+    background-color: #f8fcfa;
+}
+
+/* Analysis Results Area */
+#emoreport {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 2rem;
+  background-color: #fff;
+  border: 1px solid #d0e7d9;
+  border-radius: 0.75rem;
+}
+
+#emoreport h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0e1b13;
+    margin-bottom: 1rem;
+}
+
+.result-section, .result-container {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: #f8fcfa;
+    border: 1px solid #d0e7d9;
+    border-radius: 0.5rem;
+}
+
+.chart-container {
+    margin: 2rem 0;
+    max-width: 100%;
+    height: 300px;
+}
+
+/* Processing States */
+.processing-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 0.2em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .header {
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .user-controls {
+        gap: 1.5rem;
+    }
+
+    .dashboard-content {
+      padding: 1.5rem;
+      flex-direction: column;
+    }
+
+    .control-panel {
+      position: static;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .content-container {
+      margin-left: 0;
+      width: 100%;
+      padding-left: 0;
+    }
+
+    .control-panel button {
+        flex: 1;
+        min-width: 150px;
+    }
+    .preview-container {
+      max-height: 60vh;  /* 最大高さを制限 */
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        background-color: #f8fcfa;
+        padding: 1rem;
+        border-top: 1px solid #e7f3ec;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+
+    .menu-button {
+      display: block;  /* ハンバーガーメニュー表示 */
+    }
+
+    .nav-links.show {
+      display: flex;  /* メニュー表示時 */
+    }
+
+    /* ユーザー情報とアイコンの配置調整 */
+    .user-controls {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    .dashboard-content {
+        padding: 1rem;
+    }
+    .dashboard-header {
+      padding: 1rem;
+      height: auto;
+    }
+  
+    .app-logo {
+      width: 48px;
+      height: 48px;
+    }
+  
+    .brand-name {
+      font-size: 1.25rem;
+    }
+  
+    .control-panel {
+      grid-template-columns: 1fr;  /* 1列に */
+    }
+  
+    .preview-container {
+      max-width: 600px;
+      aspect-ratio: 4/3;  /* よりコンパクトなアスペクト比 */
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .preview-container {
+      max-width: 100%;
+      aspect-ratio: 1/1;  /* スマホ向けの正方形に */
+    }
+  
+    /* その他のスマホ向け調整 */
+    .user-controls {
+      font-size: 0.75rem;
+    }
+
+    #emoreport {
+        padding: 1rem;
+    }
+}

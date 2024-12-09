@@ -1,0 +1,140 @@
+/* emorepo-header.css */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 2.5rem;
+    border-bottom: 1px solid #e7f3ec;
+    background-color: #f8fcfa;
+}
+
+/* Left Section */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-logo {
+    width: 2rem;
+    height: 2rem;
+}
+
+.header-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.header-center {
+    display: flex;
+    align-items: center;
+    font-family: "Nico Moji";
+    font-size: 1.125rem;
+    color: #0e1b13;
+    margin-left: 0.5rem;
+}
+
+/* Right Section */
+.nav-container {
+    margin-left: auto;
+}
+
+.header-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+    color: #0e1b13;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: var(--font-base);
+}
+
+/* Icon Buttons */
+.icon-button {
+    color: #0e1b13;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* Navigation Links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+}
+
+.nav-link {
+    color: #0e1b13;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    font-family: var(--font-base);
+}
+
+.nav-link:hover {
+    opacity: 0.7;
+}
+
+/* Auth Container */
+.auth-container {
+    display: flex;
+    align-items: center;
+}
+
+#userInfo {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+}
+
+#logoutButton {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #0e1b13;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font-base);
+}
+
+#logoutButton:hover {
+    opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .header {
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .user-controls {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .user-controls {
+        gap: 1rem;
+    }
+}

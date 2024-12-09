@@ -10,120 +10,99 @@ sschk();
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>えもれぽ</title>
+    <title>エモレポ</title>
 
-    <link rel="stylesheet" href="css/workwell.css">
-    <link rel="stylesheet" href="css/workwell-dashboard.css">
-    <!-- <link rel="stylesheet" href="css/emoreport.css"> -->
+    <link rel="stylesheet" href="css/userstyle.css">
     <link href="https://fonts.googleapis.com/earlyaccess/nicomoji.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="layout-container">
-        <!-- Header Navigation -->
-        <header class="dashboard-header">
-            <div class="header-left">
-                <img src="img/transformnavi.png" alt="えもれぽ" class="app-logo">
-                <h1 class="brand-name nico-moji">えもれぽ</h1>
-            </div>
-
-            <div class="nav-container">
-
-                <div class="header-right">
-
-                    
-                    <div class="user-controls">
-                        <?=$_SESSION["name"]?>さん
-
-                        <nav class="nav-links">
-                            <button class="icon-button" aria-label="通知">
-                                <svg width="20" height="20" viewBox="0 0 256 256"><path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06Z" fill="currentColor"/></svg>
-                            </button>
-                            <button class="icon-button" aria-label="メッセージ">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM84,116a12,12,0,1,0,12,12A12,12,0,0,0,84,116Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,172,116Zm60,12A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Z" />
-                                </svg>
-                            </button>
-                            <a href="#" class="nav-link">Dashboard</a>
-                            <a href="#" class="nav-link">My Team</a>
-                            <a href="#" class="nav-link">Resources</a>
-                            <a href="userreport.php" class="nav-link">レポート管理</a>
-                            <?php if($_SESSION["mgmt_flg"]=="1"){ ?>
-                            <a href="users.php" class="nav-link">ユーザー管理</a>
-                            <?php } ?>
-                            <a href="logout.php" id="logoutButton" class="nav-link">ログアウト</a>
-                            <!-- <div id="userInfo">
-
-                            </div> -->
-                        </nav>
-                        <!-- <div id="authContainer" class="auth-container">
-
-                        </div> -->
-                    </div>
-                </div>
-            </div>
-            <button class="menu-button" aria-label="メニュー">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-        </header>
-
-        <!-- Main Content -->
-        <main class="dashboard-content">
-            <!-- Left Side Control Panel -->
-            <div class="control-panel">
-                <button id="startButton">日報入力開始</button>
-                <button id="stopButton" disabled>日報入力停止</button>
-                <button id="clearButton" disabled>クリア</button>
-                <button id="analyzebtn" disabled>日報を提出</button>
-            </div>
-            
-            <div class="content-container">
-                <!-- Main Content Area -->
-                <div class="content-wrapper">
-                    <!-- Video/Preview Area -->
-                    <div class="preview-container">
-                        <video id="video" autoplay playsinline></video>
-                        <img id="imagePreview" style="display: none;">
-                    </div>
-
-                    <!-- Status and Text Areas -->
-                    <div class="status-text-container">
-                        <div id="status">待機中...</div>
-                        <div class="text-areas">
-                            <textarea id="transcriptArea" readonly placeholder="音声入力テキストがここに表示されます..."></textarea>
-                            <textarea id="reportArea" placeholder="レポートがここに表示されます..." style="display: none;"></textarea>
-                        </div>
-                    </div>
-                
-                    <!-- Debug Panel (if needed) -->
-                    <?php if(IS_DEBUG&&DEBUG_MODE_DB){ ?>
-                        <div class="debug-panel">
-                            <!-- Debug content -->
-                        </div>
+    <header>
+        <div class="header-left">
+            <h1 class="header-logo"><img src="img/transformnavi.png" alt="タイトルロゴ"></h1>
+        </div>
+        <div class="header-center">
+            <h2>えもれぽ</h2>
+        </div>
+        <div class="header-right">
+            <div id="authContainer" class="auth-container">
+                <div id="userInfo" style="display: none;">
+                    <?=$_SESSION["name"]?>さん、こんにちは
+                    <a class="btn" href="userreport.php">レポート管理</a>
+                    <?php if($_SESSION["mgmt_flg"]=="1"){ ?>
+                    <a class="btn" href="users.php">ユーザー管理</a>
                     <?php } ?>
-                    
-                    <!-- Emoreport Section -->
-                    <div class="container" id="emoreport">
-                        <h3>文書の分析</h3>
-                        <div id="result" class="result-section"></div>
-                        
-                        <h3>表情の分析</h3>
-                        <div id="resultsContainer" class="result-container"></div>
-                        
-                        <div class="chart-container">
-                            <canvas id="emotionChart"></canvas>
-                        </div>
-                        
-                        <div id="historyContainer" class="history-container"></div>
-                        <div id="canvasDisplay"></div>
-                    </div>
+                    <button id="logoutButton" class="btn" onclick="location.href='logout.php'">ログアウト</button>
                 </div>
             </div>
-        </main>
+        </div>
+    </header>
+
+    <?php if(IS_DEBUG&&DEBUG_MODE_DB){ ?>
+    <div class="debug-panel">
+        <h4>デバッグパネル</h4>
+        <div class="debug-form">
+            <div class="form-group">
+                <label for="debug-speech">音声テキスト:</label>
+                <textarea id="speeech-testinput" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="debug-gemini">AIレポート:</label>
+                <textarea id="debug-gemini" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="debug-text-emotion">テキスト感情分析結果:</label>
+                <textarea id="debug-text-emotion" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="debug-image-emotion">画像感情分析結果:</label>
+                <textarea id="debug-image-emotion" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="debug-image">画像データ（Base64）:</label>
+                <textarea id="debug-image" class="form-control"></textarea>
+            </div>
+            <button id="debugbtn" class="btn btn-warning">デバッグ送信</button>
+        </div>
+        <div id="debugresults" class="result-section"></div>
+    </div>
+    <?php } ?>
+    <div class="container">
+        <h3>ムービーレポート入力画面</h3>
+        <div class="preview-container">
+            <video id="video" autoplay playsinline></video>
+            <img id="imagePreview" style="display: none;">
+        </div>
+        <div class="control-panel">
+            <button id="startButton">日報入力開始</button>
+            <button id="stopButton" disabled>日報入力停止</button>
+            <button id="clearButton" disabled>クリア</button>
+            <button id="analyzebtn" disabled>日報を提出</button>
+            <?php if(IS_DEBUG){ ?>
+            <button id="debugbtn">デバグ用</button>
+            <textarea id="testinput"></textarea>
+            <div id="debugresults" class="result-section"></div>
+            <?php } ?>
+        </div>
+        <div id="status">待機中...</div>
+        <textarea id="transcriptArea" readonly></textarea>
+        <textarea id="reportArea"></textarea>
+    </div>
+    <div class="container" id="emoreport">
+        <h3>文書の分析</h3>
+        <div id="result" class="result-section"></div>
+
+        <h3>表情の分析</h3>
+        <div id="resultsContainer" class="result-container"></div>
+        
+        <div class="chart-container">
+            <canvas id="emotionChart"></canvas>
+        </div>
+        
+        <div id="historyContainer" class="history-container"></div>
+        <div id="canvasDisplay"></div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="js/emotionalDictionary.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -168,7 +147,10 @@ sschk();
             $emoreport: $('#emoreport')
         }
 
+
+
         const webSpeech = new WebSpeechService(controls, isDebug);
+        // const imageAnalyzer = new ImageEmotionAnalyzer(IAconfig, isDebug);
 
         const domain = location.origin;
         const path = "/emorepo";
@@ -195,10 +177,13 @@ sschk();
 
         const scoreCalculator = new EmotionScoreCalculator();
 
+        //TODO:API送受信とDBへの登録処理をコントロールする機能をPHPに実装する。
+
         $(document).ready(async function() {
             updateUI();
-            
-            //録音開始ボタン
+
+                
+                //録音開始ボタン
             controls.$startButton.on('click',async function() {
                 console.log('Start Recording');
                 await CameraModule.init();
@@ -231,7 +216,7 @@ sschk();
                     // 日報生成用のデータ準備
                     const inputText = controls.$transcriptArea.val().trim();
                     if(isDebug) {
-                        reportinfo.reportoriginal = inputText || controls.$testinput.val();
+                        reportinfo.reportoriginal = inputText || controls.$testinput.val()  ;
                     } else {
                         reportinfo.reportoriginal = inputText;
                     }
@@ -285,6 +270,37 @@ sschk();
                 analyzeEL.$start.prop('disabled', true);
                 controls.$clearButton.prop('disabled', true);
                 controls.$transcriptArea.prop('readonly', true);
+            });
+
+            //デバグボタン DEBUGモードのみ表示
+            $('#debugbtn').on('click', async function() {
+                const debugData = {
+                    speechText: $('#speeech-testinput').val() || 'デバッグテスト',  // デフォルト値を設定
+                    dailyReport: $('#debug-gemini').val() || 'デバッグレポート',  // デフォルト値を設定
+                    textEmotionResult: $('#debug-text-emotion').val(),
+                    imageEmotionResult: $('#debug-image-emotion').val(),
+                    imageUrl: $('#debug-image').val()
+                };
+
+                // 必須フィールドの検証
+                if (!debugData.speechText || !debugData.dailyReport) {
+                    $('#debugresults').html('エラー：音声テキストと日次報告は必須です');
+                    return;
+                }
+
+                try {
+                    const debugDBapiClient = new WebApiClient(domainpath, isDebug);
+                    const saveResponse = await debugDBapiClient.postFormData('/savereport.php', debugData);
+                    
+                    if (saveResponse.success) {
+                        $('#debugresults').html('保存成功：' + JSON.stringify(saveResponse));
+                    } else {
+                        $('#debugresults').html('保存失敗：' + saveResponse.error);
+                    }
+                } catch (error) {
+                    $('#debugresults').html('エラー発生：' + error.message);
+                    console.error('Debug Error:', error);
+                }
             });
 
             //日報提出（感情分析）ボタン
@@ -362,7 +378,7 @@ sschk();
                         dailyReport: escapedReport,
                         textEmotionResult: JSON.stringify(reportinfo.textanalyzed),
                         imageEmotionResult: JSON.stringify(imageAnalysisResult),
-                        imageUrl: uploadResponse.imageUrl,
+                        imageUrl: uploadResponse.imageUrl,  // reportinfo.faceimage から変更
                         documentScore: reportinfo.documentScore,
                         terminologyScore: reportinfo.terminologyScore,
                         emotionScore: reportinfo.emotionScore
@@ -394,7 +410,10 @@ sschk();
                 if(!user) alert('ログインしていません');
                 logOut(auth);
             });
-        });
+        });    //即時関数 終了
+
+
+
 
         async function textEmotionAnalyze(text) {
             if (!text) {
@@ -420,6 +439,7 @@ sschk();
                     controls.$reportArea.val(response.text);
                     const html = renderer.generateResultHtml(response.data);
                     analyzeEL.$output.html(html);
+                    // reportinfo.reportformatted = response.text;
                     
                     // 分析結果を返す
                     return response;
@@ -433,21 +453,11 @@ sschk();
         }
 
         function updateUI() {
-            $('#userInfo').show();
-            $('#loginButton').hide();
-            $('#results').show();
+                $('#userInfo').show();
+                $('#loginButton').hide();
+                $('#results').show();
         }
-        // メニューボタンのクリックイベント
-        $('.menu-button').on('click', function() {
-        $('.nav-links').toggleClass('show');
-        });
 
-        // メニュー外クリックで閉じる
-        $(document).on('click', function(e) {
-        if (!$(e.target).closest('.menu-button, .nav-links').length) {
-            $('.nav-links').removeClass('show');
-        }
-        });
     </script>
 </body>
 </html>

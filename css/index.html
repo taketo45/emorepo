@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>えもれぽ - ログイン</title>
+    <title>WorkWell - ログイン</title>
     <link rel="stylesheet" href="css/workwell.css">
     <link rel="stylesheet" href="css/workwell-login.css">
 </head>
@@ -13,19 +13,19 @@
         <header class="header">
             <div class="logo-container">
                 <img src="img/transformnavi.png" alt="WorkWell Logo" class="header-logo">
-                <span class="logo-text nico-moji">えもれぽ</span>
+                <span class="logo-text">WorkWell</span>
             </div>
         </header>
 
         <!-- Main Content -->
         <main role="main" class="login-container">
-            <h1 class="login-title">Login</h1>
-            <p class="login-description">メンタルヘルスのモニタリング、ムードトラッキング、リソースアクセスで最高の状態をサポートします。</p>
+            <h1 class="login-title">Welcome to WorkWell</h1>
+            <p class="login-description">Monitor your mental health, track your mood and access resources to help you feel your best.</p>
 
             <!-- Login Form - Maintaining existing IDs -->
-            <form id="login-eria" class="login-form" action="login_act.php" method="post">
+            <div id="login-eria" class="login-form">
                 <div class="form-group">
-                    <label for="lid">ID</label>
+                    <label for="lid">Email</label>
                     <input type="text" id="lid" name="lid" class="form-control" required>
                 </div>
 
@@ -35,16 +35,15 @@
                 </div>
 
                 <div id="login-form-btn-box" class="form-group">
-                    <button type="submit" class="login-button">ログイン</button>
+                    <button type="submit" class="login-button">Log in</button>
                 </div>
 
                 <div class="register-prompt">
-                    アカウントをお持ちでない方は 
-                    <a href="#" class="register-link">新規登録</a>
+                    Don't have an account? 
+                    <a href="#" class="register-link">Register</a>
                 </div>
-            </form>
+            </div>
         </main>
     </div>
-    <script src="js/index.js"></script>
 </body>
 </html>

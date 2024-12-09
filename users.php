@@ -66,8 +66,11 @@ $json = json_encode($values,JSON_UNESCAPED_UNICODE);
   <div class="header-left">
       <h1 class="header-logo"><img src="img/transformnavi.png" alt="タイトルロゴ"></h1>
   </div>
+  <div class="header-right"> 
     <?php echo $_SESSION["name"]; ?>さん
+    <a class="navbar-brand" href="user.php"> ユーザー登録 </a>
     <?php include("menu.php"); ?>
+  </div>
 </header>
 <!-- Head[End] -->
 

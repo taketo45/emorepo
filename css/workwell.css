@@ -1,0 +1,123 @@
+/* Base Styles - workwell.css */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/earlyaccess/nicomoji.css');
+
+:root {
+  /* Color Palette */
+  --primary-green: #4e976d;
+  --light-green: #d0e7d9;
+  --bg-green: #f8fcfa;
+  --text-dark: #0e1b13;
+  --border-color: #e7f3ec;
+  
+  /* Typography */
+  --font-base: 'Lexend', 'Noto Sans', sans-serif;
+  --font-title: 'Nico Moji', sans-serif;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Breakpoints */
+  --bp-mobile: 480px;
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+}
+
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-base);
+  background-color: var(--bg-green);
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-family: var(--font-title);
+  color: var(--text-dark);
+}
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+}
+
+/* Layout Components */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem var(--spacing-xl);
+  border-bottom: 1px solid var(--border-color);
+  background-color: white;
+}
+
+/* Buttons */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.button-primary {
+  background-color: var(--primary-green);
+  color: white;
+  border: none;
+}
+
+.button-primary:hover {
+  opacity: 0.9;
+}
+
+/* Forms */
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--light-green);
+  border-radius: 0.5rem;
+  background-color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .layout-container {
+    padding: var(--spacing-sm);
+  }
+  
+  .header {
+    padding: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .layout-container {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 1024px) {
+  .layout-container {
+    max-width: 90%;
+  }
+}
