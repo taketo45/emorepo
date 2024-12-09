@@ -176,13 +176,35 @@ $report = $report[0];
                 </div>
 
                 <div class="report-footer">
-                    <a href="userreport.php" class="btn btn-secondary">一覧に戻る</a>
+                    <?php
+                    $hasLowScore = ($report['document_score'] < 5 || 
+                                    $report['terminology_score'] < 5 || 
+                                    $report['emotion_score'] < 5);
+                    ?>
+                    <?php if ($hasLowScore): ?>
+                        <button id="stressHandleBtn" class="btn btn-warning">ストレス対処</button>
+                    <?php endif; ?>
+                    <a href="userreport.php" class="btn btn-secondary" <?= $hasLowScore ? 'disabled' : '' ?>>一覧に戻る</a>
                 </div>
             </div>
         </main>
     </div>
 
     <div class="menu-overlay"></div>
+
+    <div id="stressModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>ストレス対処アドバイス</h4>
+            </div>
+            <div class="modal-body">
+                <div id="stressResponse"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeStressModal" class="btn btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import {DisplayModule} from './js/displayUtils.js';
@@ -243,6 +265,65 @@ $report = $report[0];
 
             const textEmotionData = <?php echo json_encode($report['ai_text_emotion']) ?>;
             parseTextEmotionAnalyze(textEmotionData, isDebug);
+
+            // ストレス対処ボタンのイベントハンドラ
+            $('#stressHandleBtn').on('click', async function() {
+                const button = $(this);
+                const modal = $('#stressModal');
+                const responseArea = $('#stressResponse');
+                
+                try {
+                    button.prop('disabled', true);
+                    modal.show();
+                    responseArea.html('<div class="text-center"><div class="spinner-border" role="status"></div><div>アドバイスを生成中...</div></div>');
+                    
+                    // スコアの取得と評価生成（既存のコード）
+                    const documentScore = <?= $report['document_score'] ?>;
+                    const terminologyScore = <?= $report['terminology_score'] ?>;
+                    const emotionScore = <?= $report['emotion_score'] ?>;
+                    
+                    let stressEvaluation = '';
+                    const scores = [documentScore, terminologyScore, emotionScore];
+                    if (scores.some(score => score < 2)) stressEvaluation = 'カウンセリングを推奨する';
+                    else if (scores.some(score => score < 3)) stressEvaluation = 'かなり感情が高ぶっている';
+                    else if (scores.some(score => score < 4)) stressEvaluation = '感情が高ぶっている';
+                    else if (scores.some(score => score < 5)) stressEvaluation = 'やや感情が高ぶっている';
+
+                    const requestText = `短期ストレス評価：${stressEvaluation}\n` +
+                        `表情感情分析結果：${emotionScore}\n` +
+                        `テキスト感情分析結果：${documentScore}\n` +
+                        `用語感情分析結果：${terminologyScore}`;
+
+                    // Difyリクエストの実行
+                    const response = await fetch('difyrequest.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            inputText: requestText
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (!result.success) {
+                        throw new Error(result.error || 'アドバイス生成に失敗しました');
+                    }
+
+                    responseArea.html(result.text);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    responseArea.html(`<div class="alert alert-danger">エラーが発生しました: ${error.message}</div>`);
+                } finally {
+                    button.prop('disabled', false);
+                }
+            });
+
+            // モーダルを閉じるボタンのイベントハンドラ
+            $('#closeStressModal').on('click', function() {
+                $('#stressModal').hide();
+            });
         });
 
         function initializeFaceEmotionDisplay() {
@@ -295,6 +376,7 @@ $report = $report[0];
                     analyzeEL.$emoreport.val(parsedData.text);
                     const html = await renderer.generateResultHtml(parsedData.data);
                     analyzeEL.$output.html(html);
+                    return html;
                 } else {
                     throw new Error(parsedData.error || 'テキスト分析に失敗しました');
                 }
