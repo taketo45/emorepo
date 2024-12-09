@@ -92,6 +92,11 @@
   margin-bottom: var(--spacing-sm);
 }
 
+.score-bar-container {
+  position: relative;
+  margin-bottom: var(--spacing-xs);
+}
+
 .score-bar {
   height: 8px;
   background-color: var(--light-green);
@@ -110,12 +115,42 @@
   transition: width 0.3s ease;
 }
 
+/* 中央マーカー */
+.score-center-marker {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 6px solid var(--text-dark);
+  transform: translateX(-50%);
+}
+
+/* スケール表示 */
+.score-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+.score-scale-start,
+.score-scale-end,
+.score-scale-center {
+  text-align: center;
+  font-size: 0.65rem;
+}
+
 .score-value {
   display: block;
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--primary-green);
-  margin-top: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  text-align: center;
 }
 
 /* Footer Actions */
@@ -184,4 +219,42 @@
     margin-bottom: var(--spacing-lg);
     padding-bottom: var(--spacing-lg);
   }
+}
+
+.report-card {
+    position: relative;
+    padding-bottom: 40px;
+}
+
+.report-summary {
+    flex: 1;
+    padding-right: 120px;
+}
+
+.report-scores {
+    position: absolute;
+    left: 50%;
+    bottom: var(--spacing-sm);
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.score-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: right;
+}
+
+.score-summary .score-item {
+    white-space: nowrap;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.score-item {
+    white-space: nowrap;
 }

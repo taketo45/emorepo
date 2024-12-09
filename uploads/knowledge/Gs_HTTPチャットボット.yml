@@ -1,0 +1,308 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: Gs_HTTPチャットボット
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.1.4
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: knowledge-retrieval
+      id: 1733449257148-source-1733449828956-target
+      source: '1733449257148'
+      sourceHandle: source
+      target: '1733449828956'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1733449828956-source-llm-target
+      source: '1733449828956'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: if-else
+      id: llm-source-1733635471015-target
+      source: llm
+      sourceHandle: source
+      target: '1733635471015'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: answer
+      id: 1733635471015-false-answer-target
+      source: '1733635471015'
+      sourceHandle: 'false'
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: answer
+      id: 1733635471015-true-1733635498271-target
+      source: '1733635471015'
+      sourceHandle: 'true'
+      target: '1733635498271'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 開始
+        type: start
+        variables:
+        - label: inquiry_user_id
+          max_length: 96
+          options: []
+          required: false
+          type: text-input
+          variable: inquiry_user_id
+      height: 90
+      id: '1733449257148'
+      position:
+        x: -153.68683383729325
+        y: 282
+      positionAbsolute:
+        x: -153.68683383729325
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1733449828956'
+          - result
+        desc: ''
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 10
+        model:
+          completion_params:
+            frequency_penalty: 0.3
+            presence_penalty: 0.2
+            temperature: 0.5
+            top_p: 0.85
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: 8c1eb817-a324-4c1e-a5fd-dbb1fc5b67b8
+          role: system
+          text: "```xml\n<instruction>\n  <instructions>\n{{#context#}}\n    あなたは簿記について詳しいチャットボットです。もりさんの情報にも詳しいです。また、Javascriptについても一部詳しいです。以下の手順に従って、質問に対して回答してください。\n\
+            \    1. 質問が与えられたら、まずその質問が簿記に関連しているか、もりさんに関するものか、ソフトウェア技術に関するものであるかを確認してください。\n\
+            \    2. 質問に対する回答を、コンテキストを参考にして提供してください。コンテキストに関連する情報がある場合は、それを基にして具体的な回答を作成します。\n\
+            \    3. コンテキストに含まれている項目については、一般的なLLM上のナレッジを参考に回答を返してください。\n　4. コンテキストに含まれていない項目についての質問については、無理やりLLM上のナレッジから回答をせずに、「NO」と出力してください。\n\
+            \    5. 質問が答えられない場合は、「NO」と出力してください。\n    6. 出力にはXMLタグを含めないでください。シンプルなテキスト形式で回答してください。\n\
+            \  </instructions>\n  \n  <examples>\n    <example>\n      <input>簿記の基本的な仕組みについて教えてください。</input>\n\
+            \      <output>簿記は、企業の財務状況を記録し、報告するための手法です。主に、取引を記録するための仕訳帳や総勘定元帳を使用します。</output>\n\
+            \    </example>\n    <example>\n      <input>もりさんの趣味は何ですか？</input>\n \
+            \     <output>もりさんは読書が好きで、特に歴史小説をよく読みます。</output>\n    </example>\n  \
+            \  <example>\n      <input>この取引はどのように記録すればいいですか？</input>\n      <output>具体的な取引内容を教えていただければ、仕訳の方法をお伝えします。例えば、売上が発生した場合は、売上高を記録し、現金または売掛金を増加させます。</output>\n\
+            \    </example>\n  </examples>\n</instruction>\n```"
+        selected: true
+        title: LLM
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 98
+      id: llm
+      position:
+        x: 417.0140218849692
+        y: 282
+      positionAbsolute:
+        x: 417.0140218849692
+        y: 282
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '<@{{#1733449257148.inquiry_user_id#}}>
+
+          {{#llm.text#}}'
+        desc: ''
+        selected: false
+        title: 回答
+        type: answer
+        variables: []
+      height: 121
+      id: answer
+      position:
+        x: 1107.192655549704
+        y: 488.7865432734717
+      positionAbsolute:
+        x: 1107.192655549704
+        y: 488.7865432734717
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - ae6c3b58-58e5-4f92-8ed3-8641181d4e3f
+        - 224498ce-cea1-490e-a2c2-6f2038c438f1
+        - 0458e003-24d8-431b-b111-04953646c40a
+        desc: ''
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: weighted_score
+          top_k: 4
+          weights:
+            keyword_setting:
+              keyword_weight: 0
+            vector_setting:
+              embedding_model_name: text-embedding-3-large
+              embedding_provider_name: openai
+              vector_weight: 1
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: 知識取得
+        type: knowledge-retrieval
+      height: 148
+      id: '1733449828956'
+      position:
+        x: 123.27142630917967
+        y: 282
+      positionAbsolute:
+        x: 123.27142630917967
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 05861afd-18cb-4349-ae57-825d0a5f4c72
+            value: 'NO'
+            varType: string
+            variable_selector:
+            - llm
+            - text
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: IF/ELSE
+        type: if-else
+      height: 126
+      id: '1733635471015'
+      position:
+        x: 746.7921975681836
+        y: 288.99606933159725
+      positionAbsolute:
+        x: 746.7921975681836
+        y: 288.99606933159725
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: 答えられない質問です、
+        desc: ''
+        selected: false
+        title: 回答 2
+        type: answer
+        variables: []
+      height: 100
+      id: '1733635498271'
+      position:
+        x: 1070.5999182707878
+        y: 283.8765796762201
+      positionAbsolute:
+        x: 1070.5999182707878
+        y: 283.8765796762201
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 196.78008683212954
+      y: 76.71953372639578
+      zoom: 0.864537231307868

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dify API Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module">
+        import { WebApiClient } from './js/WebAPIClient.js';
+
+        $(document).ready(function() {
+            const domain = location.origin;
+            const path = "/emorepo";
+            const domainpath = domain + path;
+            const apiClient = new WebApiClient(domainpath, true);
+
+            $('#sendButton').on('click', async function() {
+                const button = $(this);
+                const inputText = $('#inputText').val();
+                
+                if (!inputText) {
+                    alert('テキストを入力してください');
+                    return;
+                }
+
+                try {
+                    button.prop('disabled', true);
+                    button.text('送信中...');
+
+                    const response = await apiClient.postFormData('/difyrequest.php', { inputText });
+
+                    if (response.success) {
+                        $('#outputText').val(response.text);
+                    } else {
+                        throw new Error(response.error || 'APIリクエストに失敗しました');
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert(error.message || '処理中にエラーが発生しました');
+                } finally {
+                    button.prop('disabled', false);
+                    button.text('送信');
+                }
+            });
+        });
+    </script>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .input-area, .output-area {
+            width: 100%;
+            min-height: 200px;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        .button-area {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dify API Test</h1>
+        <textarea id="inputText" class="input-area" placeholder="テキストを入力してください"></textarea>
+        <div class="button-area">
+            <button id="sendButton">送信</button>
+        </div>
+        <textarea id="outputText" class="output-area" readonly></textarea>
+    </div>
+</body>
+</html> 

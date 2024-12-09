@@ -1,8 +1,9 @@
 export class EmotionScoreCalculator {
-    calculateScores(textAnalysisResult, originalText) {
+    calculateScores(textAnalysisResult, imageAnalysisResult) {
         return {
             documentScore: this.calculateDocumentScore(textAnalysisResult),
-            terminologyScore: this.calculateTerminologyScore(originalText)
+            terminologyScore: this.calculateTerminologyScore(textAnalysisResult),
+            emotionScore: this.calculateEmotionScore(imageAnalysisResult)
         };
     }
 
@@ -10,7 +11,7 @@ export class EmotionScoreCalculator {
         try {
             if (!textAnalysisResult || typeof textAnalysisResult !== 'object') {
                 console.warn('Invalid text analysis result');
-                return 50;
+                return 5;
             }
 
             // 感情スコアの計算（textAnalysisResultの構造に応じて調整）
@@ -26,49 +27,55 @@ export class EmotionScoreCalculator {
                 (textAnalysisResult.fear || 0) * 0.8
             ) / 3;
 
-            return Math.round((positiveScore - negativeScore + 1) * 50);
+            // 10点満点に変更
+            return Math.round((positiveScore - negativeScore + 1) * 5);
         } catch (e) {
             console.error('Document score calculation error:', e);
-            return 50;
+            return 5;
         }
     }
 
-    calculateTerminologyScore(text) {
+    calculateTerminologyScore(textAnalysisResult) {
         try {
-            // ビジネス用語のリスト（例）
-            const businessTerms = [
-                '報告', '連絡', '相談', '実施', '確認', '検討', '対応',
-                'プロジェクト', 'ミーティング', '課題', '解決', '目標'
-            ];
+            if (!textAnalysisResult || !textAnalysisResult.dictionary) {
+                console.warn('Invalid text analysis result');
+                return 5;
+            }
+
+            // 感情表現の使用頻度からスコアを計算
+            let totalScore = 0;
+            let categories = 0;
             
-            let score = 50; // 基準点
-            
-            // ビジネス用語の使用頻度をチェック
-            businessTerms.forEach(term => {
-                if (text.includes(term)) score += 5;
-            });
-            
-            // スコアの上限を100に制限
-            return Math.min(score, 100);
+            for (const emotion in textAnalysisResult.dictionary) {
+                const emotionData = textAnalysisResult.dictionary[emotion];
+                if (emotionData.score !== undefined) {
+                    totalScore += emotionData.score;
+                    categories++;
+                }
+            }
+
+            // 平均スコアを計算し、10点満点に変換
+            const averageScore = categories > 0 ? totalScore / categories : 0.5;
+            return Math.round(averageScore * 10);
         } catch (e) {
             console.error('Terminology score calculation error:', e);
-            return 50; // エラー時はデフォルト値
+            return 5;
         }
     }
 
     calculateEmotionScore(imageAnalysisResult) {
         try {
             const result = JSON.parse(imageAnalysisResult);
-            // 表情の自然さをスコア化（例：笑顔の度合いを重視）
-            const baseScore = result.happiness * 60 + 
-                            result.neutral * 40 + 
-                            result.surprise * 20;
+            // 表情の自然さをスコア化（10点満点）
+            const baseScore = (result.happiness * 6 + 
+                             result.neutral * 4 + 
+                             result.surprise * 2) / 12 * 10;
             
-            // 0-100の範囲に正規化
-            return Math.round(Math.min(Math.max(baseScore, 0), 100));
+            // 0-10の範囲に正規化
+            return Math.round(Math.min(Math.max(baseScore, 0), 10));
         } catch (e) {
             console.error('Emotion score calculation error:', e);
-            return 50; // エラー時はデフォルト値
+            return 5;
         }
     }
 } 

@@ -66,6 +66,7 @@ $report = $report[0];
 
                 <nav class="nav-links">
                     <?=$_SESSION["name"]?>さん
+                    <a href="userInformation.php" class="nav-link">レポート作成</a>
                     <a href="userreport.php" class="nav-link">レポート管理</a>
                     <?php if($_SESSION["mgmt_flg"]=="1"){ ?>
                     <a href="users.php" class="nav-link">ユーザー管理</a>
@@ -126,25 +127,49 @@ $report = $report[0];
                         <h3 class="section-title">評価スコア</h3>
                         <div class="score-grid">
                             <div class="score-item">
-                                <span class="score-label">文書品質</span>
-                                <div class="score-bar">
-                                    <div class="score-fill" style="width: <?=h($report['document_score'])?>%"></div>
-                                    <span class="score-value"><?=h($report['document_score'])?></span>
+                                <span class="score-label">文書感情スコア</span>
+                                <div class="score-bar-container">
+                                    <div class="score-bar">
+                                        <div class="score-fill" style="width: <?=h($report['document_score']*10)?>%"></div>
+                                        <div class="score-center-marker"></div>
+                                    </div>
+                                    <div class="score-scale">
+                                        <span class="score-scale-start">ネガティブ</span>
+                                        <span class="score-scale-center">▲</span>
+                                        <span class="score-scale-end">ポジティブ</span>
+                                    </div>
                                 </div>
+                                <span class="score-value"><?=h($report['document_score'])?></span>
                             </div>
                             <div class="score-item">
-                                <span class="score-label">用語適切性</span>
-                                <div class="score-bar">
-                                    <div class="score-fill" style="width: <?=h($report['terminology_score'])?>%"></div>
-                                    <span class="score-value"><?=h($report['terminology_score'])?></span>
+                                <span class="score-label">用語感情スコア</span>
+                                <div class="score-bar-container">
+                                    <div class="score-bar">
+                                        <div class="score-fill" style="width: <?=h($report['terminology_score']*10)?>%"></div>
+                                        <div class="score-center-marker"></div>
+                                    </div>
+                                    <div class="score-scale">
+                                        <span class="score-scale-start">ネガティブ</span>
+                                        <span class="score-scale-center">▲</span>
+                                        <span class="score-scale-end">ポジティブ</span>
+                                    </div>
                                 </div>
+                                <span class="score-value"><?=h($report['terminology_score'])?></span>
                             </div>
                             <div class="score-item">
-                                <span class="score-label">感情スコア</span>
-                                <div class="score-bar">
-                                    <div class="score-fill" style="width: <?=h($report['emotion_score'])?>%"></div>
-                                    <span class="score-value"><?=h($report['emotion_score'])?></span>
+                                <span class="score-label">表情感情スコア</span>
+                                <div class="score-bar-container">
+                                    <div class="score-bar">
+                                        <div class="score-fill" style="width: <?=h($report['emotion_score']*10)?>%"></div>
+                                        <div class="score-center-marker"></div>
+                                    </div>
+                                    <div class="score-scale">
+                                        <span class="score-scale-start">ネガティブ</span>
+                                        <span class="score-scale-center">▲</span>
+                                        <span class="score-scale-end">ポジティブ</span>
+                                    </div>
                                 </div>
+                                <span class="score-value"><?=h($report['emotion_score'])?></span>
                             </div>
                         </div>
                     </section>

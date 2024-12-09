@@ -24,6 +24,12 @@ if (!$reports || empty($reports)) {
 if(IS_DEBUG) {
     error_log("Found " . count($reports) . " reports for user " . $_SESSION['uid']);
 }
+
+function getScoreLabel($score) {
+    if ($score < 4) return 'ネガティブ';
+    if ($score > 6) return 'ポジティブ';
+    return '中立';
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -53,6 +59,7 @@ if(IS_DEBUG) {
 
                 <nav class="nav-links">
                     <?=$_SESSION["name"]?>さん
+                    <a href="userInformation.php" class="nav-link">レポート作成</a>
                     <a href="userreport.php" class="nav-link">レポート管理</a>
                     <?php if($_SESSION["mgmt_flg"]=="1"){ ?>
                     <a href="users.php" class="nav-link">ユーザー管理</a>
@@ -91,6 +98,13 @@ if(IS_DEBUG) {
                                             $summary = preg_replace('/\\\\/', '', $summary);
                                             echo nl2br($summary);
                                         ?>
+                                    </div>
+                                </div>
+                                <div class="report-card">
+                                    <div class="report-scores">
+                                        <div class="score-item">文書：<?=h($report['document_score'])?>(<?=getScoreLabel($report['document_score'])?>)</div>
+                                        <div class="score-item">用語：<?=h($report['terminology_score'])?>(<?=getScoreLabel($report['terminology_score'])?>)</div>
+                                        <div class="score-item">表情：<?=h($report['emotion_score'])?>(<?=getScoreLabel($report['emotion_score'])?>)</div>
                                     </div>
                                 </div>
                             </a>

@@ -14,7 +14,6 @@ sschk();
 
     <link rel="stylesheet" href="css/workwell.css">
     <link rel="stylesheet" href="css/workwell-dashboard.css">
-    <!-- <link rel="stylesheet" href="css/emoreport.css"> -->
     <link href="https://fonts.googleapis.com/earlyaccess/nicomoji.css" rel="stylesheet">
 </head>
 <body>
@@ -27,10 +26,7 @@ sschk();
             </div>
 
             <div class="nav-container">
-
                 <div class="header-right">
-
-                    
                     <div class="user-controls">
                         <?=$_SESSION["name"]?>さん
 
@@ -43,21 +39,12 @@ sschk();
                                     <path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM84,116a12,12,0,1,0,12,12A12,12,0,0,0,84,116Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,172,116Zm60,12A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Z" />
                                 </svg>
                             </button>
-                            <a href="#" class="nav-link">Dashboard</a>
-                            <a href="#" class="nav-link">My Team</a>
-                            <a href="#" class="nav-link">Resources</a>
                             <a href="userreport.php" class="nav-link">レポート管理</a>
                             <?php if($_SESSION["mgmt_flg"]=="1"){ ?>
                             <a href="users.php" class="nav-link">ユーザー管理</a>
                             <?php } ?>
                             <a href="logout.php" id="logoutButton" class="nav-link">ログアウト</a>
-                            <!-- <div id="userInfo">
-
-                            </div> -->
                         </nav>
-                        <!-- <div id="authContainer" class="auth-container">
-
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -70,24 +57,25 @@ sschk();
 
         <!-- Main Content -->
         <main class="dashboard-content">
-            <!-- Left Side Control Panel -->
             <div class="control-panel">
                 <button id="startButton">日報入力開始</button>
                 <button id="stopButton" disabled>日報入力停止</button>
                 <button id="clearButton" disabled>クリア</button>
                 <button id="analyzebtn" disabled>日報を提出</button>
+                <?php if(IS_DEBUG){ ?>
+                <button id="debugbtn">デバグ用</button>
+                <textarea id="testinput"></textarea>
+                <div id="debugresults" class="result-section"></div>
+                <?php } ?>
             </div>
             
             <div class="content-container">
-                <!-- Main Content Area -->
                 <div class="content-wrapper">
-                    <!-- Video/Preview Area -->
                     <div class="preview-container">
                         <video id="video" autoplay playsinline></video>
                         <img id="imagePreview" style="display: none;">
                     </div>
 
-                    <!-- Status and Text Areas -->
                     <div class="status-text-container">
                         <div id="status">待機中...</div>
                         <div class="text-areas">
@@ -96,14 +84,37 @@ sschk();
                         </div>
                     </div>
                 
-                    <!-- Debug Panel (if needed) -->
+                    <!-- Debug Panel -->
                     <?php if(IS_DEBUG&&DEBUG_MODE_DB){ ?>
                         <div class="debug-panel">
-                            <!-- Debug content -->
+                            <h4>デバッグパネル</h4>
+                            <div class="debug-form">
+                                <div class="form-group">
+                                    <label for="debug-speech">音声テキスト:</label>
+                                    <textarea id="speeech-testinput" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="debug-gemini">AIレポート:</label>
+                                    <textarea id="debug-gemini" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="debug-text-emotion">テキスト感情分析結果:</label>
+                                    <textarea id="debug-text-emotion" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="debug-image-emotion">画像感情分析結果:</label>
+                                    <textarea id="debug-image-emotion" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="debug-image">画像データ（Base64）:</label>
+                                    <textarea id="debug-image" class="form-control"></textarea>
+                                </div>
+                                <button id="debugbtn" class="btn btn-warning">デバッグ送信</button>
+                            </div>
+                            <div id="debugresults" class="result-section"></div>
                         </div>
                     <?php } ?>
                     
-                    <!-- Emoreport Section -->
                     <div class="container" id="emoreport">
                         <h3>文書の分析</h3>
                         <div id="result" class="result-section"></div>
@@ -130,12 +141,10 @@ sschk();
     <script type="module">
         import { WebApiClient } from './js/WebAPIClient.js';
         import { CameraModule } from './js/camera.js';
-        // import { TextEmotionAnalyzer } from './js/TextEmotionAnalyzer.js';
         import { TextEmotionResultRenderer } from './js/TextEmotionResultRenderer.js';
         import { ImageEmotionAnalyzer } from './js/ImageEmotionAnalyzer.js';
         import { WebSpeechService } from './js/WebSpeechService.js';
         import { DisplayModule } from './js/displayUtils.js';
-        // import { AuthService } from './js/authService.js';
         import {auth, provider, app, db, storage, googleAuthLaterProcess, logOut} from './js/FirebaseInit.js';
         import { EmotionScoreCalculator } from './js/EmotionScoreCalculator.js';
 
@@ -193,7 +202,7 @@ sschk();
         const lid = '<?=$_SESSION["lid"]?>';
         console.log('lid:', lid);
 
-        const scoreCalculator = new EmotionScoreCalculator();
+
 
         $(document).ready(async function() {
             updateUI();
@@ -210,6 +219,9 @@ sschk();
             //録音停止ボタン
             controls.$stopButton.on('click', async () => {
                 try {
+                    // オーバーレイを表示
+                    $('#processing-overlay').show();
+                    
                     // 録音停止処理
                     webSpeech.stop();
                     
@@ -247,8 +259,7 @@ sschk();
                     }
 
                     const response = await AIapiClient.postFormData(AiFrontPath, textObj);
-                    console.log('Received response:', response);
-
+                    
                     if (response && response.success) {
                         const formattedText = response.text.replace(/<\/?report>/g, ''); 
                         console.log('Formatted Text:', formattedText);
@@ -267,6 +278,8 @@ sschk();
                     controls.$status.text('エラーが発生しました');
                     alert('日報の作成に失敗しました: ' + error.message);
                 } finally {
+                    // オーバーレイを非表示
+                    $('#processing-overlay').hide();
                     controls.$clearButton.prop('disabled', false);
                 }
             });
@@ -285,6 +298,36 @@ sschk();
                 analyzeEL.$start.prop('disabled', true);
                 controls.$clearButton.prop('disabled', true);
                 controls.$transcriptArea.prop('readonly', true);
+            });
+
+            //デバグボタン DEBUGモードのみ表示
+            $('#debugbtn').on('click', async function() {
+                const debugData = {
+                    speechText: $('#speeech-testinput').val() || 'デバッグテスト',
+                    dailyReport: $('#debug-gemini').val() || 'デバッグレポート',
+                    textEmotionResult: $('#debug-text-emotion').val(),
+                    imageEmotionResult: $('#debug-image-emotion').val(),
+                    imageUrl: $('#debug-image').val()
+                };
+
+                if (!debugData.speechText || !debugData.dailyReport) {
+                    $('#debugresults').html('エラー：音声テキストと日次報告は必須です');
+                    return;
+                }
+
+                try {
+                    const debugDBapiClient = new WebApiClient(domainpath, isDebug);
+                    const saveResponse = await debugDBapiClient.postFormData('/savereport.php', debugData);
+                    
+                    if (saveResponse.success) {
+                        $('#debugresults').html('保存成功：' + JSON.stringify(saveResponse));
+                    } else {
+                        $('#debugresults').html('保存失敗：' + saveResponse.error);
+                    }
+                } catch (error) {
+                    $('#debugresults').html('エラー発生：' + error.message);
+                    console.error('Debug Error:', error);
+                }
             });
 
             //日報提出（感情分析）ボタン
@@ -314,13 +357,8 @@ sschk();
                     }
                     
                     reportinfo.textanalyzed = textAnalysisResult;
-                    const scores = scoreCalculator.calculateScores(
-                        textAnalysisResult.data,
-                        reportinfo.reportoriginal
-                    );
-                    
-                    reportinfo.documentScore = scores.documentScore;
-                    reportinfo.terminologyScore = scores.terminologyScore;
+
+
                     
                     // 画像分析の実行
                     const imageData = controls.$faceImage.attr('src');
@@ -350,7 +388,23 @@ sschk();
                     }
 
                     reportinfo.imageanalyzed = imageAnalysisResult.data;
-                    reportinfo.emotionScore = scoreCalculator.calculateEmotionScore(imageAnalysisResult);
+                    
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    //TODO: スコア計算のロジック見直し ★★
+                    const scoreCalculator = new EmotionScoreCalculator();
+                    const scores = scoreCalculator.calculateScores(
+                        textAnalysisResult.data,
+                        reportinfo.reportoriginal,
+                        imageAnalysisResult
+                    );
+                    
+                    reportinfo.documentScore = scores.documentScore;
+                    reportinfo.terminologyScore = scores.terminologyScore;
+                    // reportinfo.emotionScore = scoreCalculator.calculateEmotionScore(imageAnalysisResult);
+                    reportinfo.emotionScore = scores.emotionScore;
+
+                    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 
                     // PHPの受信時に問題を起こす\nをエスケープ
                     const escapedReport = reportinfo.reportformatted
@@ -371,7 +425,7 @@ sschk();
                         console.log('Report Data:');
                         console.log(reportData);
                     }
-    
+
                     const DBapiClient = new WebApiClient(domainpath, isDebug);
                     const saveResponse = await DBapiClient.postFormData('/savereport.php', reportData);
                     
@@ -403,7 +457,7 @@ sschk();
 
             const textPostData = { 
                 textanalyzerequest: text,
-                type: 'emotion'  // リクエストタイプを明示
+                type: 'emotion'
             };
 
             const textApiClient = new WebApiClient(domainpath, isDebug);
@@ -416,13 +470,13 @@ sschk();
 
                 const response = await textApiClient.postFormData(RequestTextAnalyzePath, textPostData);
                 
+                // 分析結果の表示
+
                 if (response.success) {
                     controls.$reportArea.val(response.text);
                     const html = renderer.generateResultHtml(response.data);
                     analyzeEL.$output.html(html);
-                    
-                    // 分析結果を返す
-                    return response;
+                    return response; // 分析結果を返す  
                 } else {
                     throw new Error(response.error || 'テキスト分析に失敗しました');
                 }
@@ -449,5 +503,11 @@ sschk();
         }
         });
     </script>
+    <div id="processing-overlay" class="processing-overlay" style="display: none;">
+        <div class="processing-content">
+            <div class="spinner-border text-light"></div>
+            <p class="mt-3 text-light">日報作成中...</p>
+        </div>
+    </div>
 </body>
 </html>
