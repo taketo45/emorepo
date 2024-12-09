@@ -86,7 +86,9 @@ $report = $report[0];
                             <div class="emotion-result-debug" id="imageEmotionResults-debug">
                             </div>
                             <div id="resultsContainer"></div>
-                            <canvas id="emotionChart"></canvas>
+                            <div style="max-width: 300px; margin: auto;">
+                                <canvas id="emotionChart"></canvas>
+                            </div>
                         </div>
                     <?php endif; ?>
 
@@ -128,6 +130,7 @@ $report = $report[0];
         import {TextEmotionResultRenderer} from './js/TextEmotionResultRenderer.js';
 
         const isDebug = <?php echo IS_DEBUG;?> || false;
+        const isDebugDetail = false;
 
         const analyzeEL = {
             $input: $('#transcriptArea'),
@@ -160,7 +163,7 @@ $report = $report[0];
 
         function initializeFaceEmotionDisplay() {
             const imageEmotionData = <?php echo json_encode($report['image_emotion'] ?? '') ?>;
-            if (isDebug) {
+            if (isDebug&&isDebugDetail) {
                 $('#imageEmotionResults-debug').html(imageEmotionData);
             }
 
