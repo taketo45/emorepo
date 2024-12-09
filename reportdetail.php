@@ -273,6 +273,7 @@ $report = $report[0];
                 const responseArea = $('#stressResponse');
                 
                 try {
+                    await loadKeywordMap();  // キーワードマップの読み込み
                     button.prop('disabled', true);
                     modal.show();
                     responseArea.html('<div class="text-center"><div class="spinner-border" role="status"></div><div>アドバイスを生成中...</div></div>');
@@ -310,7 +311,9 @@ $report = $report[0];
                         throw new Error(result.error || 'アドバイス生成に失敗しました');
                     }
 
-                    responseArea.html(result.text);
+                    // レスポンステキストのリンク化
+                    const linkedText = convertKeywordsToLinks(result.text);
+                    responseArea.html(linkedText);
 
                 } catch (error) {
                     console.error('Error:', error);
@@ -384,6 +387,47 @@ $report = $report[0];
                 console.error('API Error:', error);
                 throw error;
             }
+        }
+
+        // 定数定義
+        const URL_BASE = 'https://www.google.com/maps/search/?api=1&query=';
+        const GEO_LOCATION = '<?php 
+            echo isset($_SESSION["geocode"]) && !empty($_SESSION["geocode"]) 
+                ? $_SESSION["geocode"] 
+                : "35.6812362,139.7649361"; //東京駅がデフォルト値
+        ?>';
+
+        // キーワードの配列を定義
+        const keywordList = [];
+
+        // CSVファイルの読み込みと解析を修正
+        async function loadKeywordMap() {
+            try {
+                const response = await fetch('keywords.csv');
+                const text = await response.text();
+                const lines = text.split('\n');
+                
+                lines.forEach(line => {
+                    const keyword = line.trim();
+                    if (keyword) {
+                        keywordList.push(keyword);
+                    }
+                });
+            } catch (error) {
+                console.error('キーワードの読み込みに失敗:', error);
+            }
+        }
+
+        // テキスト内のキーワードをリンクに変換する関数を修正
+        function convertKeywordsToLinks(text) {
+            let result = text;
+            keywordList.forEach(keyword => {
+                const regex = new RegExp(keyword, 'g');
+                const encodedKeyword = encodeURIComponent(keyword);
+                const url = `${URL_BASE}${GEO_LOCATION}+${encodedKeyword}`;
+                result = result.replace(regex, `<a href="${url}" target="_blank">${keyword}</a>`);
+            });
+            return result;
         }
 
     </script>
