@@ -1,7 +1,7 @@
 <?php
 
-define('IS_DEBUG', true);
-define('DEBUG_MODE_AI', true); // AIのデータの詳細表示  
+define('IS_DEBUG', false);
+define('DEBUG_MODE_AI', false); // AIのデータの詳細表示  
 define('DEBUG_MODE_DB', false); // userInformation.phpのデータベース接続データの詳細表示  
 define('DEBUG_MODE_ANALYZE', false);  // reportdetail.phpの表情分析・テキスト分析データの詳細表示
 //XSS対応（ echoする場所で使用！それ以外はNG ）
