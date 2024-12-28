@@ -3,6 +3,12 @@ session_start();
 include "lib/funcs.php";
 require_once('../../emorepoconfig/config.php');
 sschk();
+error_log("IS_DEBUG:".IS_DEBUG);
+if(IS_DEBUG){
+    $isDebug = "true";
+} else {
+    $isDebug = "false";
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -148,7 +154,7 @@ sschk();
         import {auth, provider, app, db, storage, googleAuthLaterProcess, logOut} from './js/FirebaseInit.js';
         import { EmotionScoreCalculator } from './js/EmotionScoreCalculator.js';
 
-        const isDebug = <?=IS_DEBUG?>;
+        const isDebug = <?=$isDebug?>;
 
         if(isDebug) {
             console.log('@@@@@@@ Debug Mode @@@@@@@');
