@@ -46,6 +46,7 @@ $report = $report[0];
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="shortcut icon" href="img/transformnavi_favicon.png" type="image/x-icon">
 </head>
 
 <body>

@@ -42,6 +42,7 @@ try{
   <title>エモレポ ユーザー更新</title>
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/main.css">
+  <link rel="shortcut icon" href="img/transformnavi_favicon.png" type="image/x-icon">
 </head>
 <body>
 

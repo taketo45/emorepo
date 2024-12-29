@@ -21,6 +21,7 @@ if(IS_DEBUG){
     <link rel="stylesheet" href="css/workwell.css">
     <link rel="stylesheet" href="css/workwell-dashboard.css">
     <link href="https://fonts.googleapis.com/earlyaccess/nicomoji.css" rel="stylesheet">
+    <link rel="shortcut icon" href="img/transformnavi_favicon.png" type="image/x-icon">
 </head>
 <body>
     <div class="layout-container">
