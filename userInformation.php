@@ -70,9 +70,9 @@ if(IS_DEBUG){
                 <button id="clearButton" disabled>クリア</button>
                 <button id="analyzebtn" disabled>日報を提出</button>
                 <?php if(IS_DEBUG){ ?>
-                <button id="debugbtn">デバグ用</button>
+                <!-- <button id="debugbtn">デバグ用</button>
                 <textarea id="testinput"></textarea>
-                <div id="debugresults" class="result-section"></div>
+                <div id="debugresults" class="result-section"></div> -->
                 <?php } ?>
             </div>
             

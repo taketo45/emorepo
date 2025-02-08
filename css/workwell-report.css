@@ -275,3 +275,12 @@
   min-height: 100vh;
   background-color: #fff;
 }
+
+#debugbtn {
+  background-color: skyblue;
+  padding: 0;
+  border-radius: 0.5rem;
+  font-weight: 350;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
