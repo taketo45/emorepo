@@ -122,20 +122,6 @@ if(IS_DEBUG){
                         </div>
                     <?php } ?>
                     
-                    <div class="container" id="emoreport">
-                        <h3>文書の分析</h3>
-                        <div id="result" class="result-section"></div>
-                        
-                        <h3>表情の分析</h3>
-                        <div id="resultsContainer" class="result-container"></div>
-                        
-                        <div class="chart-container">
-                            <canvas id="emotionChart"></canvas>
-                        </div>
-                        
-                        <div id="historyContainer" class="history-container"></div>
-                        <div id="canvasDisplay"></div>
-                    </div>
                 </div>
             </div>
         </main>
